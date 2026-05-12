@@ -1,0 +1,248 @@
+@extends('layouts.app')
+
+@section('title', 'Profil 6 Faktor')
+
+@section('styles')
+<script src="https://cdn.jsdelivr.net/npm/@sgratzl/chartjs-chart-boxplot@4/build/index.umd.min.js"></script>
+@endsection
+
+@section('content')
+<div class="header-section mb-32 flex-between">
+    <div>
+        <h1 style="font-size: 28px; margin-bottom: 8px;">Profil 6 Faktor</h1>
+        <p style="color: var(--text-secondary);">Analisis mendalam terhadap dimensi kesehatan internal organisasi.</p>
+    </div>
+    <div style="display: flex; gap: 12px;">
+        @if(isset($all_umkms) && $all_umkms->count() > 1)
+            <select onchange="window.location.href='?umkm_id=' + this.value" style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none; cursor: pointer;">
+                @foreach($all_umkms as $u)
+                    <option value="{{ $u->umkm_id }}" {{ $selected_umkm_id == $u->umkm_id ? 'selected' : '' }}>
+                        {{ $u->nama_umkm }}
+                    </option>
+                @endforeach
+            </select>
+        @else
+            <select style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none;">
+                <option>{{ optional($assessment_info)->umkm->nama_umkm ?? 'UMKM' }}</option>
+            </select>
+        @endif
+        @if(isset($assessment_history) && $assessment_history->count() > 0)
+            <select onchange="window.location.href='?umkm_id={{ $selected_umkm_id }}&assessment_id=' + this.value" style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none; cursor: pointer;">
+                @foreach($assessment_history as $history)
+                    <option value="{{ $history->assessment_id }}" {{ $selected_assessment_id == $history->assessment_id ? 'selected' : '' }}>
+                        Periode: {{ \Carbon\Carbon::parse($history->assessment_date)->format('F Y') }} (Ke-{{ $history->sequence_in_month ?? 1 }}) - {{ ucfirst($history->status) }}
+                    </option>
+                @endforeach
+            </select>
+        @else
+            <select style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none;">
+                <option>Periode: {{ $assessment_info ? \Carbon\Carbon::parse($assessment_info->assessment_date)->format('F Y') : 'N/A' }} (Ke-1)</option>
+            </select>
+        @endif
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+    <!-- Overall Score -->
+    <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <i class="fa-solid fa-shield-heart" style="font-size: 20px; color: var(--success);"></i>
+            <span style="font-weight: 600; font-size: 14px;">Skor Kesehatan Keseluruhan</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 8px;">
+            <span style="font-size: 48px; font-weight: 700;">{{ $health_score ? number_format($health_score->overall_score, 1) : '0.0' }}</span>
+            <span style="font-size: 20px; color: var(--text-secondary);">/ 100</span>
+        </div>
+        <div style="margin-top: 16px;">
+            @php
+                $scoreValue = $health_score->overall_score ?? 0;
+                
+                // Logika Warna Baru (Interval 25%)
+                if ($scoreValue > 75) {
+                    $scoreColor = 'var(--success)';
+                    $scoreBg = 'rgba(74, 222, 128, 0.1)';
+                } elseif ($scoreValue > 50) {
+                    $scoreColor = '#818cf8'; // Biru Indigo
+                    $scoreBg = 'rgba(129, 140, 248, 0.1)';
+                } elseif ($scoreValue > 25) {
+                    $scoreColor = 'var(--warning)';
+                    $scoreBg = 'rgba(250, 204, 21, 0.1)';
+                } else {
+                    $scoreColor = 'var(--danger)';
+                    $scoreBg = 'rgba(248, 113, 113, 0.1)';
+                }
+                
+                // Kategori sekarang sudah dalam bahasa Indonesia dari DB
+                $category = $health_score ? $health_score->category : 'N/A';
+            @endphp
+            <span style="font-size: 10px; padding: 4px 8px; background: {{ $scoreBg }}; color: {{ $scoreColor }}; border-radius: 4px; font-weight: 700;">{{ str_replace('_', ' ', strtoupper($category)) }}</span>
+        </div>
+    </div>
+
+    <!-- Highest Factor -->
+    <div class="card">
+        <div class="flex-between mb-16">
+            <span style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Faktor Tertinggi</span>
+            <i class="fa-solid fa-arrow-trend-up" style="color: var(--success);"></i>
+        </div>
+        <h3 style="font-size: 20px; margin-bottom: 12px;">{{ $highlights['highest']['factor'] ?? 'N/A' }}</h3>
+        <div style="height: 8px; background: #222; border-radius: 4px; margin-bottom: 8px;"><div style="width: {{ $highlights['highest']['score'] ?? 0 }}%; height: 100%; background: var(--success); border-radius: 4px;"></div></div>
+        <span style="font-size: 12px; font-weight: 600;">{{ $highlights['highest']['score'] ?? 0 }}%</span>
+    </div>
+
+    <!-- Lowest Factor -->
+    <div class="card">
+        <div class="flex-between mb-16">
+            <span style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Faktor Terendah</span>
+            <i class="fa-solid fa-arrow-trend-down" style="color: var(--danger);"></i>
+        </div>
+        <h3 style="font-size: 20px; margin-bottom: 12px;">{{ $highlights['lowest']['factor'] ?? 'N/A' }}</h3>
+        <div style="height: 8px; background: #222; border-radius: 4px; margin-bottom: 8px;"><div style="width: {{ $highlights['lowest']['score'] ?? 0 }}%; height: 100%; background: var(--danger); border-radius: 4px;"></div></div>
+        <span style="font-size: 12px; font-weight: 600;">{{ $highlights['lowest']['score'] ?? 0 }}%</span>
+    </div>
+</div>
+
+<!-- Active Insight -->
+<div class="card" style="background: linear-gradient(90deg, #161616 0%, #1a1a1a 100%); border: 1px solid var(--border-color); display: flex; gap: 20px; align-items: center; padding: 20px;">
+    <div style="width: 40px; height: 40px; background: rgba(99, 102, 241, 0.1); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <i class="fa-solid fa-lightbulb"></i>
+    </div>
+    <div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">Active Insight</div>
+        <p style="font-size: 14px;">{!! $recommendations->first()->recommendation_text ?? 'Tidak ada wawasan aktif.' !!}</p>
+    </div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 24px; margin-top: 24px;">
+    <!-- Radar Chart -->
+    <div class="card">
+        <h3 class="card-title">Factor Connectivity Map</h3>
+        <div style="height: 400px;">
+            <canvas id="factorRadarChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Outlier Analysis -->
+    <div class="card">
+        <div class="flex-between mb-24">
+            <div>
+                <h3 class="card-title" style="margin-bottom: 4px;">Outlier Analysis</h3>
+                <p style="font-size: 12px; color: var(--text-secondary);">Deteksi anomali skor kesehatan pada tingkat ekosistem UMKM.</p>
+            </div>
+            <i class="fa-solid fa-ellipsis" style="color: var(--text-secondary); cursor: pointer;"></i>
+        </div>
+        
+        <div style="height: 320px; background: rgba(0,0,0,0.1); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <canvas id="outlierChart"></canvas>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    const radarData = @json($radar_chart);
+    const radarLabels = radarData.map(d => [d.factor, d.score + '%']);
+    const radarScores = radarData.map(d => d.score);
+
+    // Radar Chart
+    new Chart(document.getElementById('factorRadarChart'), {
+        type: 'radar',
+        data: {
+            labels: radarLabels,
+            datasets: [{
+                label: 'Profil Saat Ini',
+                data: radarScores,
+                fill: true,
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                borderColor: '#ffffff',
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#ffffff'
+            }]
+        },
+        options: {
+            scales: {
+                r: {
+                    angleLines: { color: '#333' },
+                    grid: { color: '#333' },
+                    pointLabels: { color: '#a3a3a3', font: { size: 12 } },
+                    ticks: { display: false },
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            },
+            plugins: { legend: { display: false } },
+            maintainAspectRatio: false
+        }
+    });
+
+    const outlierData = @json($outliers);
+    const boxplotLabels = outlierData.map(d => d.code + ' (' + d.nama_factor + ')');
+    const boxplotDataset = outlierData.map(d => d.stats);
+
+    // Outlier Box Plot Chart
+    new Chart(document.getElementById('outlierChart'), {
+        type: 'boxplot',
+        data: {
+            labels: boxplotLabels,
+            datasets: [
+                {
+                    label: 'Sebaran Skor (0-100%)',
+                    data: boxplotDataset,
+                    backgroundColor: 'rgba(99, 102, 241, 0.3)',
+                    borderColor: '#818cf8',
+                    borderWidth: 1.5,
+                    outlierBackgroundColor: '#f87171',
+                    outlierBorderColor: '#f87171',
+                    outlierRadius: 5,
+                    medianColor: '#facc15',
+                    itemRadius: 2,
+                    itemBackgroundColor: 'rgba(129,140,248,0.4)'
+                }
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: { color: '#a3a3a3', font: { size: 11 }, boxWidth: 12 }
+                },
+                tooltip: {
+                    backgroundColor: '#1a1a1a',
+                    borderColor: '#333',
+                    borderWidth: 1,
+                    titleColor: '#a3a3a3',
+                    bodyColor: '#fff',
+                    callbacks: {
+                        label: (ctx) => {
+                            const v = ctx.raw;
+                            return [
+                                `Q1: ${v.q1} | Median: ${v.median}`,
+                                `Q3: ${v.q3} | Min: ${v.min} | Max: ${v.max}`
+                            ];
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    min: 0, max: 105,
+                    title: {
+                        display: true,
+                        text: 'Tingkat Kepuasan/Kepatuhan (%)'
+                    },
+                    grid: { color: '#222' },
+                    ticks: { color: '#a3a3a3', stepSize: 10 }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#a3a3a3', font: { size: 10 } }
+                }
+            }
+        }
+    });
+</script>
+@endsection
