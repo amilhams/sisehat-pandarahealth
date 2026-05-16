@@ -56,3 +56,80 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+Keputusan yang bijak! Jika memang hostingnya membatasi Postman, menulis dokumentasi manual di **README.md** GitHub adalah solusi paling aman dan tetap terlihat profesional di mata penilai.
+
+Berikut adalah draf lengkap **API Documentation** yang bisa kamu langsung salin ke file `README.md` di repository backend kamu.
+
+---
+
+### 📝 API Documentation (Manual)
+
+**Base URL:** `https://pandarahealth.infinityfree.me`
+
+#### 1. Authentication
+| Method | Endpoint | Deskripsi | Auth |
+|:---|:---|:---|:---|
+| POST | `/api/auth/register` | Mendaftarkan akun Owner baru | No |
+| POST | `/api/auth/login` | Login untuk mendapatkan akses | No |
+| POST | `/api/auth/logout` | Menghapus sesi login | Yes |
+| GET | `/api/auth/me` | Mengambil data profil user login | Yes |
+
+**Contoh Body Register (JSON):**
+```json
+{
+    "name": "Nama User",
+    "email": "user@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+}
+```
+
+---
+
+#### 2. UMKM Management
+| Method | Endpoint | Deskripsi | Auth |
+|:---|:---|:---|:---|
+| GET | `/api/umkm` | List semua UMKM milik owner | Yes |
+| POST | `/api/umkm` | Menambah data UMKM baru | Yes |
+| GET | `/api/umkm/{id}` | Melihat detail satu UMKM | Yes |
+
+**Contoh Body Tambah UMKM (JSON):**
+```json
+{
+    "nama_umkm": "Toko Berkah",
+    "bidang": "Perdagangan",
+    "jumlah_karyawan": 5
+}
+```
+
+---
+
+#### 3. Assessment & Survey
+| Method | Endpoint | Deskripsi | Auth |
+|:---|:---|:---|:---|
+| GET | `/api/assessment/questions` | Ambil daftar soal (query: `?type=owner`) | No |
+| POST | `/api/assessment/submit` | Mengirim jawaban survei | No |
+| GET | `/api/assessment/{id}/monitoring` | Cek progres pengisian karyawan | Yes |
+
+**Contoh Body Submit Jawaban (JSON):**
+```json
+{
+    "assessment_id": 1,
+    "answers": [
+        { "question_id": 1, "answer": 5 },
+        { "question_id": 2, "answer": 3 }
+    ]
+}
+```
+
+---
+
+#### 4. Dashboard & Analytics
+| Method | Endpoint | Deskripsi | Auth |
+|:---|:---|:---|:---|
+| GET | `/api/dashboard/umkm/{id}/latest` | Skor kesehatan terakhir | Yes |
+| GET | `/api/dashboard/assessment/{id}/factors` | Data untuk Grafik Radar | Yes |
+
+---

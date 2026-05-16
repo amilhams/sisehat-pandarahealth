@@ -456,11 +456,7 @@ class DashboardController extends Controller
             ->first();
 
         if (!$assessment) {
-            $assessment = \App\Models\Assessment::create([
-                'umkm_id' => $umkmId,
-                'status' => 'draft',
-                'tanggal_mulai' => now()
-            ]);
+            return redirect()->route('assessment')->with('error', 'Silakan tentukan target jumlah karyawan terlebih dahulu untuk memulai asesmen baru.');
         }
 
         // Ambil pertanyaan dikelompokkan per faktor (Hanya yang ada pertanyaan untuk owner)

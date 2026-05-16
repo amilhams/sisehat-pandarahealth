@@ -119,10 +119,17 @@
                                 {{ $umkm->assessment_status == 'selesai' ? 'Lihat Hasil' : 'Monitoring' }}
                             </a>
                         @else
-                            <a href="{{ route('assessment.fill', $umkm->umkm_id) }}" class="btn-action btn-fill" style="text-decoration: none; flex: 2;">
-                                <i class="fa-solid fa-pen-to-square"></i> 
-                                {{ $umkm->assessment_status == 'belum_mulai' ? 'Mulai Asesmen' : 'Lanjut Mengisi' }}
-                            </a>
+                            @if($umkm->assessment_status == 'belum_mulai' && !$umkm->active_assessment_id)
+                                <button type="button" class="btn-action btn-fill" style="flex: 2;"
+                                        onclick="openNewPeriodModal('{{ $umkm->umkm_id }}', '{{ $umkm->nama_umkm }}', true)">
+                                    <i class="fa-solid fa-play"></i> Mulai Asesmen
+                                </button>
+                            @else
+                                <a href="{{ route('assessment.fill', $umkm->umkm_id) }}" class="btn-action btn-fill" style="text-decoration: none; flex: 2;">
+                                    <i class="fa-solid fa-pen-to-square"></i> 
+                                    {{ $umkm->assessment_status == 'belum_mulai' ? 'Mulai Asesmen' : 'Lanjut Mengisi' }}
+                                </a>
+                            @endif
                         @endif
 
                         <button class="btn-action btn-link" onclick="manageLinks('{{ $umkm->umkm_id }}', '{{ $umkm->nama_umkm }}')" 
@@ -154,7 +161,7 @@
     <div style="background:#151515; border:1px solid #333; border-radius:24px; padding:32px; width:90%; max-width:450px; position:relative;">
         <button onclick="closeNewPeriodModal()" style="position:absolute; top:20px; right:20px; background:none; border:none; color:#666; cursor:pointer; font-size:20px;"><i class="fa-solid fa-xmark"></i></button>
         
-        <h3 style="font-size:24px; font-weight:800; margin-bottom:8px; color:#fff;">Buat Periode Baru</h3>
+        <h3 id="newPeriodModalTitle" style="font-size:24px; font-weight:800; margin-bottom:8px; color:#fff;">Buat Periode Baru</h3>
         <p id="newPeriodUmkmName" style="color:var(--text-secondary); font-size:13px; margin-bottom:24px;">UMKM Name</p>
         
         <form id="newPeriodForm" action="" method="POST">
@@ -167,7 +174,7 @@
             </div>
 
             <button type="submit" class="btn-action btn-fill" style="width:100%; padding:14px; border-radius:12px; font-weight:700;">
-                Mulai Periode Baru
+                Mulai Asesmen
             </button>
         </form>
     </div>
@@ -201,9 +208,10 @@
     let activeUmkmId = null;
     let syncRouteBase = "{{ route('assessment.new', ':id') }}";
 
-    function openNewPeriodModal(id, name) {
+    function openNewPeriodModal(id, name, isFirst = false) {
         activeUmkmId = id;
         document.getElementById('newPeriodUmkmName').innerText = name;
+        document.getElementById('newPeriodModalTitle').innerText = isFirst ? 'Mulai Asesmen Pertama' : 'Buat Periode Baru';
         document.getElementById('newPeriodForm').action = syncRouteBase.replace(':id', id);
         document.getElementById('newPeriodModal').style.display = 'flex';
     }
