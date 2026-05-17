@@ -46,6 +46,29 @@ Route::post('/assessment/generate', [AssessmentController::class, 'createAssessm
 Route::post('/api/responses/submit', [AssessmentController::class, 'submitResponse'])->name('api.responses.submit');
 Route::get('/employee-assessment/{token}', [EmployeeAssessmentController::class, 'show'])->name('employee.assessment');
 Route::post('/employee-assessment/{token}', [EmployeeAssessmentController::class, 'store'])->name('employee.assessment.submit');
+// Route Rahasia untuk Migrasi & Impor Data via Browser (Berguna untuk cPanel / Hosting tanpa SSH)
+Route::get('/run-migration', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $outputMigrate = \Illuminate\Support\Facades\Artisan::output();
+        
+        \Illuminate\Support\Facades\Artisan::call('import:csv');
+        $outputImport = \Illuminate\Support\Facades\Artisan::output();
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Migrasi database dan impor CSV berhasil dilakukan!',
+            'migrate_output' => $outputMigrate,
+            'import_output' => $outputImport
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+        ], 500);
+    }
+});
+
 Route::get('/login', function () { return view('pages.login'); })->name('login');
 Route::get('/register', function () { return view('pages.register'); })->name('register');
 

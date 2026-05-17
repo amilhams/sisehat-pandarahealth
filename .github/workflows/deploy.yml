@@ -1,0 +1,34 @@
+name: Deploy to InfinityFree via FTP
+
+on:
+  push:
+    branches:
+      - main  # Ganti dengan 'master' jika branch utama Anda bernama master
+
+jobs:
+  web-deploy:
+    name: 🚀 Deploy Website
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Ambil Kode Terbaru dari GitHub
+      uses: actions/checkout@v3
+
+    - name: 📦 Pasang Dependensi Composer Produksi
+      run: |
+        composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+    - name: 📂 Unggah File ke InfinityFree via FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ftpupload.net  # Host FTP bawaan InfinityFree
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./  # Kirim semua folder proyek dari GitHub
+        server-dir: htdocs/  # Folder tujuan utama di InfinityFree
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/tests/**
+          Dockerfile
+          deploy.sh
