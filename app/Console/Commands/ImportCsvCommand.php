@@ -22,9 +22,9 @@ class ImportCsvCommand extends Command
     {
         $this->info('Starting CSV Import Process...');
 
-        $importsPath = storage_path('app/imports');
+        $importsPath = is_dir(storage_path('app/Imports')) ? storage_path('app/Imports') : storage_path('app/imports');
         // Let's also check project root 'imports' folder since we told user to put it there.
-        $rootImportsPath = base_path('imports');
+        $rootImportsPath = is_dir(base_path('Imports')) ? base_path('Imports') : base_path('imports');
         
         $path = is_dir($rootImportsPath) ? $rootImportsPath : $importsPath;
 

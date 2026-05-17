@@ -4,6 +4,55 @@
 
 @section('styles')
 <script src="https://cdn.jsdelivr.net/npm/@sgratzl/chartjs-chart-boxplot@4/build/index.umd.min.js"></script>
+<style>
+    .profil-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    
+    @media (max-width: 1024px) {
+        .profil-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    }
+    
+    @media (max-width: 768px) {
+        .profil-grid { 
+            display: flex; 
+            overflow-x: auto; 
+            scroll-snap-type: x mandatory; 
+            -webkit-overflow-scrolling: touch; 
+            padding-bottom: 12px; 
+        }
+        .profil-grid > .card { 
+            min-width: 260px; 
+            flex-shrink: 0; 
+            scroll-snap-align: start; 
+        }
+        .header-section { flex-direction: column; align-items: flex-start; gap: 16px; }
+        .header-section > div:last-child { flex-direction: column; width: 100%; }
+        .header-section select { width: 100%; }
+    }
+
+    .chart-scroll-wrap {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        background: rgba(0,0,0,0.1);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 24px;
+    }
+    .chart-inner-container {
+        height: 320px;
+        position: relative;
+    }
+    @media (max-width: 768px) {
+        .chart-inner-container {
+            min-width: 600px;
+        }
+    }
+</style>
 @endsection
 
 @section('content')
@@ -12,9 +61,9 @@
         <h1 style="font-size: 28px; margin-bottom: 8px;">Profil 6 Faktor</h1>
         <p style="color: var(--text-secondary);">Analisis mendalam terhadap dimensi kesehatan internal organisasi.</p>
     </div>
-    <div style="display: flex; gap: 12px;">
+    <div style="display: flex; gap: 12px; width: 100%; max-width: 500px; justify-content: flex-end;">
         @if(isset($all_umkms) && $all_umkms->count() > 1)
-            <select onchange="window.location.href='?umkm_id=' + this.value" style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none; cursor: pointer;">
+            <select onchange="window.location.href='?umkm_id=' + this.value" style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none; cursor: pointer; flex: 1;">
                 @foreach($all_umkms as $u)
                     <option value="{{ $u->umkm_id }}" {{ $selected_umkm_id == $u->umkm_id ? 'selected' : '' }}>
                         {{ $u->nama_umkm }}
@@ -22,12 +71,12 @@
                 @endforeach
             </select>
         @else
-            <select style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none;">
+            <select style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none; flex: 1;">
                 <option>{{ optional($assessment_info)->umkm->nama_umkm ?? 'UMKM' }}</option>
             </select>
         @endif
         @if(isset($assessment_history) && $assessment_history->count() > 0)
-            <select onchange="window.location.href='?umkm_id={{ $selected_umkm_id }}&assessment_id=' + this.value" style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none; cursor: pointer;">
+            <select onchange="window.location.href='?umkm_id={{ $selected_umkm_id }}&assessment_id=' + this.value" style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none; cursor: pointer; flex: 1;">
                 @foreach($assessment_history as $history)
                     <option value="{{ $history->assessment_id }}" {{ $selected_assessment_id == $history->assessment_id ? 'selected' : '' }}>
                         Periode: {{ \Carbon\Carbon::parse($history->assessment_date)->format('F Y') }} (Ke-{{ $history->sequence_in_month ?? 1 }}) - {{ ucfirst($history->status) }}
@@ -35,14 +84,14 @@
                 @endforeach
             </select>
         @else
-            <select style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none;">
+            <select style="background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; color: white; font-size: 14px; outline: none; flex: 1;">
                 <option>Periode: {{ $assessment_info ? \Carbon\Carbon::parse($assessment_info->assessment_date)->format('F Y') : 'N/A' }} (Ke-1)</option>
             </select>
         @endif
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+<div class="profil-grid">
     <!-- Overall Score -->
     <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
@@ -132,8 +181,10 @@
             <i class="fa-solid fa-ellipsis" style="color: var(--text-secondary); cursor: pointer;"></i>
         </div>
         
-        <div style="height: 320px; background: rgba(0,0,0,0.1); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
-            <canvas id="outlierChart"></canvas>
+        <div class="chart-scroll-wrap">
+            <div class="chart-inner-container">
+                <canvas id="outlierChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -179,7 +230,22 @@
     });
 
     const outlierData = @json($outliers);
-    const boxplotLabels = outlierData.map(d => d.code + ' (' + d.nama_factor + ')');
+    const abbreviationMap = {
+        'organizational values': 'OV',
+        'organization value': 'OV',
+        'leader involvement': 'LDI',
+        'institutional resources': 'INS',
+        'institutional resource': 'INS',
+        'operational stability': 'OPS',
+        'operational stablity': 'OPS',
+        'work environment quality': 'WEQ',
+        'work enviorment quality': 'WEQ',
+        'economics performance': 'ECT',
+        'economic performance': 'ECT',
+        'economic performence': 'ECT',
+        'echonomic performence': 'ECT'
+    };
+    const boxplotLabels = outlierData.map(d => d.nama_factor);
     const boxplotDataset = outlierData.map(d => d.stats);
 
     // Outlier Box Plot Chart
@@ -217,6 +283,10 @@
                     titleColor: '#a3a3a3',
                     bodyColor: '#fff',
                     callbacks: {
+                        title: (tooltipItems) => {
+                            const index = tooltipItems[0].dataIndex;
+                            return outlierData[index] ? outlierData[index].nama_factor : '';
+                        },
                         label: (ctx) => {
                             const v = ctx.raw;
                             return [
@@ -239,7 +309,18 @@
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#a3a3a3', font: { size: 10 } }
+                    ticks: {
+                        color: '#a3a3a3',
+                        font: { size: 10 },
+                        callback: function(value, index, values) {
+                            const label = this.getLabelForValue(value);
+                            if (window.innerWidth <= 1024) {
+                                const factorLower = label.toLowerCase().trim();
+                                return abbreviationMap[factorLower] || label;
+                            }
+                            return label;
+                        }
+                    }
                 }
             }
         }

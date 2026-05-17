@@ -106,6 +106,34 @@
         0%, 100% { opacity: 1; }
         50% { opacity: .5; }
     }
+
+    /* Dashboard Specific Media Queries */
+    @media (max-width: 1024px) {
+        .stat-row { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .main-grid { grid-template-columns: 1fr; }
+        .bottom-grid { grid-template-columns: 1fr; }
+    }
+    
+    @media (max-width: 768px) {
+        .dash-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+        .stat-row { 
+            display: flex; 
+            overflow-x: auto; 
+            scroll-snap-type: x mandatory; 
+            -webkit-overflow-scrolling: touch; 
+            padding-bottom: 12px; 
+            margin-bottom: 20px;
+        }
+        .stat-card2 { 
+            min-width: 200px; 
+            flex-shrink: 0; 
+            scroll-snap-align: start; 
+        }
+        .factor-bar-row { grid-template-columns: 1fr; gap: 16px; }
+        .health-gauge-wrap { width: 100%; max-width: 280px; height: 140px; }
+        .health-pct { font-size: 36px; }
+        .donut-center-wrap { width: 120px !important; height: 120px !important; }
+    }
 </style>
 @endsection
 
@@ -351,34 +379,36 @@
         <a href="{{ route('umkm-rank') }}" class="btn-sm btn-sm-outline" style="text-decoration:none;">LIHAT SEMUA</a>
     </div>
 
-    <table class="rank-table">
-        <thead>
-            <tr>
-                <th>Rank</th><th>Nama UMKM</th><th>Sektor Bisnis</th><th>Status</th><th style="text-align:right;">Skor Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($top_umkms as $idx => $top)
-            <tr>
-                <td><div class="rank-num">{{ $idx + 1 }}</div></td>
-                <td style="font-weight:600;">{{ $top->nama_umkm }}</td>
-                <td style="color:var(--text-secondary);">{{ $top->sektor_usaha ?? '-' }}</td>
-                <td>
-                    @if($top->overall_score > 75)
-                        <span class="badge badge-stabil" style="padding:4px 10px;font-size:10px;background:rgba(74,222,128,.12);color:#4ade80;">SANGAT SEHAT</span>
-                    @elseif($top->overall_score > 50)
-                        <span class="badge badge-stabil" style="padding:4px 10px;font-size:10px;background:rgba(129,140,248,.12);color:#818cf8;">SEHAT</span>
-                    @elseif($top->overall_score > 25)
-                        <span class="badge badge-warn" style="padding:4px 10px;font-size:10px;">CUKUP SEHAT</span>
-                    @else
-                        <span class="badge badge-kritis" style="padding:4px 10px;font-size:10px;">KURANG SEHAT</span>
-                    @endif
-                </td>
-                <td style="text-align:right;"><span class="rank-score">{{ number_format($top->overall_score, 1) }}</span></td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="rank-table">
+            <thead>
+                <tr>
+                    <th>Rank</th><th>Nama UMKM</th><th>Sektor Bisnis</th><th>Status</th><th style="text-align:right;">Skor Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($top_umkms as $idx => $top)
+                <tr>
+                    <td><div class="rank-num">{{ $idx + 1 }}</div></td>
+                    <td style="font-weight:600;">{{ $top->nama_umkm }}</td>
+                    <td style="color:var(--text-secondary);">{{ $top->sektor_usaha ?? '-' }}</td>
+                    <td>
+                        @if($top->overall_score > 75)
+                            <span class="badge badge-stabil" style="padding:4px 10px;font-size:10px;background:rgba(74,222,128,.12);color:#4ade80;">SANGAT SEHAT</span>
+                        @elseif($top->overall_score > 50)
+                            <span class="badge badge-stabil" style="padding:4px 10px;font-size:10px;background:rgba(129,140,248,.12);color:#818cf8;">SEHAT</span>
+                        @elseif($top->overall_score > 25)
+                            <span class="badge badge-warn" style="padding:4px 10px;font-size:10px;">CUKUP SEHAT</span>
+                        @else
+                            <span class="badge badge-kritis" style="padding:4px 10px;font-size:10px;">KURANG SEHAT</span>
+                        @endif
+                    </td>
+                    <td style="text-align:right;"><span class="rank-score">{{ number_format($top->overall_score, 1) }}</span></td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @endsection

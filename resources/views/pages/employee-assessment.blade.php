@@ -65,6 +65,64 @@
     .btn-prev { background: transparent; border: 1px solid #222; color: #666; }
     .btn-next { background: #fff; border: none; color: #000; }
     .btn-next:disabled { opacity: 0.2; cursor: not-allowed; }
+
+    /* Media Queries for Responsiveness */
+    @media (max-width: 1024px) {
+        .stepper-container { max-width: 90%; margin: 40px auto; }
+    }
+
+    @media (max-width: 768px) {
+        .stepper-container { margin: 24px auto; }
+        .page-title { font-size: 26px; margin-bottom: 16px; }
+        
+        .progress-nav { margin-bottom: 30px; }
+        .progress-nav::before { top: 12px; }
+        .progress-step { width: 26px; height: 26px; font-size: 10px; }
+
+        .factor-card { padding: 28px 20px; border-radius: 20px; }
+        .factor-name { font-size: 22px; margin-bottom: 8px; }
+        .factor-desc { font-size: 13px; }
+
+        .question-item { padding-top: 24px; margin-top: 24px; }
+        .question-text { font-size: 14px; margin-bottom: 16px; }
+        
+        .options-grid {
+            display: flex !important;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 12px;
+            gap: 10px;
+        }
+        .opt-btn { 
+            min-width: 60px; 
+            height: 44px; 
+            font-size: 14px; 
+            border-radius: 10px; 
+            flex-shrink: 0;
+            scroll-snap-align: start;
+        }
+        
+        .identity-input { font-size: 16px; padding: 14px; }
+        .nav-footer { flex-direction: column; gap: 12px; }
+        .btn-nav { padding: 12px 20px; font-size: 13px; justify-content: center; width: 100%; }
+    }
+
+    @media (max-width: 480px) {
+        .stepper-container { margin: 16px auto; }
+        .page-title { font-size: 22px; }
+        
+        .progress-step { width: 22px; height: 22px; font-size: 9px; }
+        .progress-nav::before { top: 10px; }
+        .progress-step i { font-size: 9px; }
+
+        .options-grid { gap: 6px; }
+        .opt-btn { height: 38px; font-size: 13px; border-radius: 8px; }
+        .scale-labels { font-size: 9px; }
+
+        .nav-footer { gap: 10px; }
+        .btn-nav { flex: 1; justify-content: center; padding: 12px 10px; font-size: 12px; }
+    }
 </style>
 @endsection
 
@@ -93,7 +151,8 @@
                 <p class="factor-desc">Masukkan ID Karyawan Anda untuk memulai sesi asesmen anonim ini.</p>
             </div>
             
-            <input type="text" name="employee_code" id="employee_code" class="identity-input" placeholder="Contoh: PH-2024-001">
+            <input type="text" name="employee_code" id="employee_code" class="identity-input" placeholder="Contoh: PH-2024-001" maxlength="50">
+            <span id="codeLengthMsg" style="font-size: 11px; margin-top: -10px; margin-bottom: 20px; display: block; color: var(--text-secondary); text-align: center;"></span>
             
             <div class="nav-footer">
                 <div></div>
@@ -163,7 +222,26 @@
     function validate(step) {
         let valid = true;
         if (step === 0) {
-            valid = document.getElementById('employee_code').value.trim().length > 2;
+            const input = document.getElementById('employee_code');
+            const msg = document.getElementById('codeLengthMsg');
+            const len = input.value.trim().length;
+
+            if (len === 0) {
+                msg.textContent = "Maksimal karakter 50";
+                msg.style.color = "#737373"; // Abu-abu netral
+                input.style.borderColor = "";
+                valid = false;
+            } else if (len < 3) {
+                msg.textContent = "Minimal 3 karakter (" + len + "/50)";
+                msg.style.color = "#f87171"; // Merah
+                input.style.borderColor = "#f87171";
+                valid = false;
+            } else {
+                msg.textContent = "Maksimal karakter 50 (" + len + "/50)";
+                msg.style.color = "#4ade80"; // Hijau
+                input.style.borderColor = "#4ade80";
+                valid = true;
+            }
         } else {
             const card = document.getElementById('card-' + step);
             card.querySelectorAll('.ans-field').forEach(input => {
@@ -202,6 +280,7 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({
@@ -209,13 +288,22 @@
                 answers: answers
             })
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.error) alert(data.error);
-            else {
-                alert(data.message);
-                window.location.reload();
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok) {
+                if (res.status === 422 && data.errors) {
+                    throw new Error("Terdapat format isian yang belum lengkap atau tidak valid.");
+                }
+                throw new Error(data.error || data.message || "Terjadi kesalahan pada server");
             }
+            return data;
+        })
+        .then(data => {
+            alert(data.message);
+            window.location.reload();
+        })
+        .catch(err => {
+            alert(err.message);
         });
     }
 

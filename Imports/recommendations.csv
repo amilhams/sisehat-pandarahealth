@@ -1,25 +1,25 @@
 nama_factor,category_level,recommendation_text
-Organizational values,Healthy,Rekomendasi untuk Organizational values dengan status Healthy.
-Organizational values,Moderate,Rekomendasi untuk Organizational values dengan status Moderate.
-Organizational values,Weak,Rekomendasi untuk Organizational values dengan status Weak.
-Organizational values,Critical,Rekomendasi untuk Organizational values dengan status Critical.
-Leader involvement,Healthy,Rekomendasi untuk Leader involvement dengan status Healthy.
-Leader involvement,Moderate,Rekomendasi untuk Leader involvement dengan status Moderate.
-Leader involvement,Weak,Rekomendasi untuk Leader involvement dengan status Weak.
-Leader involvement,Critical,Rekomendasi untuk Leader involvement dengan status Critical.
-Institutional resources,Healthy,Rekomendasi untuk Institutional resources dengan status Healthy.
-Institutional resources,Moderate,Rekomendasi untuk Institutional resources dengan status Moderate.
-Institutional resources,Weak,Rekomendasi untuk Institutional resources dengan status Weak.
-Institutional resources,Critical,Rekomendasi untuk Institutional resources dengan status Critical.
-Operational stability,Healthy,Rekomendasi untuk Operational stability dengan status Healthy.
-Operational stability,Moderate,Rekomendasi untuk Operational stability dengan status Moderate.
-Operational stability,Weak,Rekomendasi untuk Operational stability dengan status Weak.
-Operational stability,Critical,Rekomendasi untuk Operational stability dengan status Critical.
-Work environment quality,Healthy,Rekomendasi untuk Work environment quality dengan status Healthy.
-Work environment quality,Moderate,Rekomendasi untuk Work environment quality dengan status Moderate.
-Work environment quality,Weak,Rekomendasi untuk Work environment quality dengan status Weak.
-Work environment quality,Critical,Rekomendasi untuk Work environment quality dengan status Critical.
-Economics performance,Healthy,Rekomendasi untuk Economics performance dengan status Healthy.
-Economics performance,Moderate,Rekomendasi untuk Economics performance dengan status Moderate.
-Economics performance,Weak,Rekomendasi untuk Economics performance dengan status Weak.
-Economics performance,Critical,Rekomendasi untuk Economics performance dengan status Critical.
+"Organizational values",KURANG_SEHAT,"Karyawan merasa pimpinan sangat tidak peduli dan tidak ada keterlibatan dalam operasional tim."
+"Organizational values",CUKUP_SEHAT,"Kepemimpinan dirasakan kurang konsisten. Arahan sering membingungkan atau kurangnya apresiasi terhadap kerja keras karyawan."
+"Organizational values",SEHAT,"Pimpinan sudah cukup baik, namun delegasi tugas dan pengembangan bakat karyawan belum maksimal."
+"Organizational values",SANGAT_SEHAT,"Kepemimpinan sangat kuat dan menjadi panutan yang baik bagi seluruh anggota tim."
+"Leader involvement",KURANG_SEHAT,"Lingkungan kerja dirasakan tidak aman atau sangat membuat stres karena beban kerja yang berlebihan."
+"Leader involvement",CUKUP_SEHAT,"Fasilitas fisik kantor atau jam kerja seringkali dikeluhkan dan mulai mengganggu produktivitas."
+"Leader involvement",SEHAT,"Kondisi kerja stabil, namun variasi tugas atau kenyamanan tambahan masih bisa ditingkatkan."
+"Leader involvement",SANGAT_SEHAT,"Lingkungan kerja sangat mendukung produktivitas dan kesejahteraan karyawan terjamin."
+"Institutional resources",KURANG_SEHAT,"Terjadi perpecahan atau konflik internal yang parah antar karyawan, kerjasama tim hampir tidak ada."
+"Institutional resources",CUKUP_SEHAT,"Komunikasi antar karyawan formal dan kaku. Kurang adanya inisiatif untuk saling membantu."
+"Institutional resources",SEHAT,"Hubungan kerja cukup harmonis, namun semangat kerja tim cenderung fluktuatif."
+"Institutional resources",SANGAT_SEHAT,"Budaya saling menghormati dan kerjasama tim sangat kuat. Semangat kerja sangat tinggi."
+"Operational stability",KURANG_SEHAT,"Rantai pasok sering terputus dan mesin produksi sering rusak, menghambat kelangsungan bisnis."
+"Operational stability",CUKUP_SEHAT,"Efisiensi operasional rendah. Masih banyak pemborosan waktu atau bahan baku dalam proses harian."
+"Operational stability",SEHAT,"Operasional berjalan lancar, namun teknologi yang digunakan mulai tertinggal dari kompetitor."
+"Operational stability",SANGAT_SEHAT,"Sistem operasional dan rantai pasok sangat handal dan efisien."
+"Work environment quality",KURANG_SEHAT,"Bisnis kehilangan pelanggan setia secara drastis dan tidak ada strategi pemasaran yang berjalan."
+"Work environment quality",CUKUP_SEHAT,"Upaya pemasaran hanya mengandalkan pelanggan lama tanpa adanya penambahan pasar baru."
+"Work environment quality",SEHAT,"Pertumbuhan penjualan stabil, namun loyalitas pelanggan jangka panjang belum terukur dengan baik."
+"Work environment quality",SANGAT_SEHAT,"Hubungan dengan pelanggan sangat baik dan strategi pemasaran sangat efektif."
+"Economics performance",KURANG_SEHAT,"Bisnis berada dalam ancaman kebangkrutan karena arus kas yang sangat buruk dan hutang menumpuk."
+"Economics performance",CUKUP_SEHAT,"Margin keuntungan sangat kecil sehingga bisnis sulit untuk berkembang atau menabung."
+"Economics performance",SEHAT,"Keuangan stabil namun belum memiliki perencanaan investasi atau cadangan dana darurat yang kuat."
+"Economics performance",SANGAT_SEHAT,"Struktur keuangan sangat sehat dengan arus kas yang kuat dan pertumbuhan modal yang konsisten."

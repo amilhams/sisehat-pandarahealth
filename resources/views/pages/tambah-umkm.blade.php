@@ -180,6 +180,17 @@
         border-radius: 50%;
     }
     .radio-label { font-size: 14px; color: #fff; }
+
+    @media (max-width: 768px) {
+        .form-card { padding: 32px 24px; }
+        .field-row { grid-template-columns: 1fr; gap: 16px; }
+    }
+    
+    @media (max-width: 480px) {
+        .page-heading { font-size: 24px; }
+        .form-actions { flex-direction: column; width: 100%; }
+        .btn-batal, .btn-simpan { width: 100%; text-align: center; justify-content: center; }
+    }
 </style>
 @endsection
 

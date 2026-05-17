@@ -28,6 +28,17 @@
 
     /* Main Grid */
     .main-grid { display: grid; grid-template-columns: 1.65fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .hide-on-desktop { display: none !important; }
+    .show-on-desktop { display: flex !important; }
+
+    @media (max-width: 1024px) {
+        .main-grid { grid-template-columns: 1fr; }
+        .comp-header-inner { flex-direction: column; align-items: flex-start; }
+        .comp-actions { width: 100%; }
+        .comp-actions select, .comp-actions .btn-date { flex: 1; }
+        .hide-on-desktop { display: flex !important; }
+        .show-on-desktop { display: none !important; }
+    }
 
     /* Cards */
     .card2 { background: var(--card-color); border: 1px solid var(--border-color); border-radius: 14px; padding: 24px; }
@@ -128,13 +139,17 @@
                 <i class="fa-solid fa-clock-rotate-left"></i>
                 <div class="card-h">Perbandingan Faktor<br>Antar Periode</div>
             </div>
-            <div class="legend-row">
+            <div class="legend-row show-on-desktop">
                 <span><span class="leg-sq" style="background:#818cf8;"></span> Periode Saat Ini</span>
                 <span><span class="leg-sq" style="background:rgba(255,255,255,0.2);"></span> Periode Sebelumnya</span>
             </div>
         </div>
         <div style="height:300px;">
             <canvas id="periodComparisonChart"></canvas>
+        </div>
+        <div class="legend-row hide-on-desktop" style="justify-content: center; margin-top: 16px;">
+            <span><span class="leg-sq" style="background:#818cf8;"></span> Periode Saat Ini</span>
+            <span><span class="leg-sq" style="background:rgba(255,255,255,0.2);"></span> Periode Sebelumnya</span>
         </div>
     </div>
 
@@ -174,7 +189,7 @@
 
 {{-- Industry Comparison --}}
 <div class="card2" style="margin-bottom:32px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap: 16px;" class="comp-header-inner">
         <div>
             <div style="font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 14px; margin-bottom: 4px;">
                 <i class="fa-solid fa-city" style="font-size: 20px; color: var(--text-secondary);"></i>
@@ -184,13 +199,17 @@
                 {{ optional($assessment_info)->umkm->nama_umkm ?? 'UMKM' }} vs Rata-rata {{ $industry_benchmark['peer_count'] ?? 0 }} UMKM sejenis ({{ $industry_benchmark['sektor_usaha'] ?? 'Semua Sektor' }})
             </div>
         </div>
-        <div class="legend-row">
+        <div class="legend-row show-on-desktop">
             <span><span class="leg-ci" style="background:#22d3ee;"></span> {{ optional($assessment_info)->umkm->nama_umkm ?? 'UMKM' }}</span>
             <span><span class="leg-ci" style="background:rgba(255,255,255,0.2);"></span> Rata-rata Industri</span>
         </div>
     </div>
     <div style="height:320px;">
         <canvas id="industryComparisonChart"></canvas>
+    </div>
+    <div class="legend-row hide-on-desktop" style="justify-content: center; margin-top: 16px;">
+        <span><span class="leg-ci" style="background:#22d3ee;"></span> {{ optional($assessment_info)->umkm->nama_umkm ?? 'UMKM' }}</span>
+        <span><span class="leg-ci" style="background:rgba(255,255,255,0.2);"></span> Rata-rata Industri</span>
     </div>
 </div>
 
@@ -204,9 +223,31 @@ const currVals = radarData.map(d => d.score);
 const prevVals = radarData.map(d => d.prev_score || 0);
 const avgVals = radarData.map(d => d.industry_avg || 0);
 
+const abbreviationMap = {
+    'organizational values': 'OV',
+    'organization value': 'OV',
+    'leader involvement': 'LDI',
+    'institutional resources': 'INS',
+    'institutional resource': 'INS',
+    'operational stability': 'OPS',
+    'operational stablity': 'OPS',
+    'work environment quality': 'WEQ',
+    'work enviorment quality': 'WEQ',
+    'economics performance': 'ECT',
+    'economic performance': 'ECT',
+    'economic performence': 'ECT',
+    'echonomic performence': 'ECT'
+};
+
 const tooltipCfg = {
     backgroundColor: '#1a1a1a', borderColor: '#333', borderWidth: 1,
-    titleColor: '#a3a3a3', bodyColor: '#fff', padding: 10
+    titleColor: '#a3a3a3', bodyColor: '#fff', padding: 10,
+    callbacks: {
+        title: (tooltipItems) => {
+            const index = tooltipItems[0].dataIndex;
+            return factors[index] || '';
+        }
+    }
 };
 
 // ── Period Comparison ──────────────────────────────────
@@ -224,7 +265,21 @@ new Chart(document.getElementById('periodComparisonChart'), {
         plugins: { legend: { display: false }, tooltip: tooltipCfg },
         scales: {
             y: { beginAtZero: true, max: 100, grid: { color: '#222' }, ticks: { color: '#a3a3a3', stepSize: 25 } },
-            x: { grid: { display: false }, ticks: { color: '#a3a3a3', font: { size: 10 } } }
+            x: { 
+                grid: { display: false }, 
+                ticks: { 
+                    color: '#a3a3a3', 
+                    font: { size: 10 },
+                    callback: function(value, index, values) {
+                        const label = this.getLabelForValue(value);
+                        if (window.innerWidth <= 1024) {
+                            const factorLower = label.toLowerCase().trim();
+                            return abbreviationMap[factorLower] || label;
+                        }
+                        return label;
+                    }
+                } 
+            }
         }
     }
 });
@@ -282,7 +337,15 @@ new Chart(document.getElementById('industryComparisonChart'), {
                 ticks: { 
                     color: '#a3a3a3', 
                     font: { size: 10 },
-                    padding: 18 // Increase padding to make room for scores
+                    padding: 18, // Increase padding to make room for scores
+                    callback: function(value, index, values) {
+                        const label = this.getLabelForValue(value);
+                        if (window.innerWidth <= 1024) {
+                            const factorLower = label.toLowerCase().trim();
+                            return abbreviationMap[factorLower] || label;
+                        }
+                        return label;
+                    }
                 } 
             }
         }

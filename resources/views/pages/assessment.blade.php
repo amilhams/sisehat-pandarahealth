@@ -10,7 +10,13 @@
     .hub-subtitle { color: var(--text-secondary); font-size: 14px; }
 
     /* UMKM Status Grid */
-    .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-bottom: 40px; }
+    .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+    
+    @media (max-width: 768px) {
+        .status-grid { grid-template-columns: 1fr; }
+        .status-card { padding: 20px; }
+        .hub-title { font-size: 26px; }
+    }
     .status-card {
         background: var(--card-color);
         border: 1px solid var(--border-color);

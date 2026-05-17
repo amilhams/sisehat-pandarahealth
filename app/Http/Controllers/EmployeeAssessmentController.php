@@ -56,7 +56,7 @@ class EmployeeAssessmentController extends Controller
         $assessment = Assessment::find($tokenRecord->assessment_id);
         
         $request->validate([
-            'employee_code' => 'required|string',
+            'employee_code' => 'required|string|max:50',
             'answers' => 'required|array',
             'answers.*' => 'required|integer|min:1'
         ]);

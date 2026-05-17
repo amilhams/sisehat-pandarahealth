@@ -96,8 +96,11 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="appSidebar">
             <div class="logo" style="display:flex; align-items:center; gap:14px; margin-bottom:48px;">
                 <img src="{{ asset('images/logo_pandara.png') }}" alt="Pandara" style="width:44px; height:44px; object-fit:contain; flex-shrink:0;">
                 <h2 style="font-size: 17px; font-weight: 700; line-height:1.2;">Pandara <span style="font-weight: 400; color: var(--text-secondary);">Health</span></h2>
@@ -183,6 +186,17 @@
 
         <!-- Main Content -->
         <main class="main-content" style="position: relative;">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <img src="{{ asset('images/logo_pandara.png') }}" alt="Pandara" style="width:32px; height:32px;">
+                    <span style="font-weight:700; font-size:16px;">Pandara <span style="font-weight:400; color:var(--text-secondary);">Health</span></span>
+                </div>
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+
             <section class="content {{ ((isset($show_umkm_popup) && $show_umkm_popup) || (isset($show_assessment_popup) && $show_assessment_popup)) && !Route::is('dashboard') ? 'blur-content' : '' }}">
                 @if(isset($show_in_page_notice) && $show_in_page_notice && !Route::is('dashboard'))
                     <div style="background: rgba(250, 204, 21, 0.1); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 12px; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
@@ -281,6 +295,14 @@
         @if(session('error'))
             showToast("{{ session('error') }}", 'error');
         @endif
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
     </script>
 
     @yield('scripts')

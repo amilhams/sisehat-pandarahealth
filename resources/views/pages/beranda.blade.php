@@ -140,6 +140,26 @@
     }
     .step-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
     .step-desc  { font-size: 12px; color: var(--text-secondary); line-height: 1.7; }
+
+    /* ── Responsive Media Queries ── */
+    @media (max-width: 1024px) {
+        .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+        .hero-grid { grid-template-columns: 1fr; }
+        .hero-actions { flex-direction: column; }
+        .btn-primary-hero, .btn-ghost-hero { width: 100%; justify-content: center; }
+        
+        .steps-grid { grid-template-columns: 1fr; }
+        .steps-grid::before { display: none; } /* Hide connecting line on mobile */
+    }
+
+    @media (max-width: 480px) {
+        .features-grid { grid-template-columns: 1fr; }
+        .hero-card, .kelola-card { padding: 24px 20px; }
+        .kelola-title { font-size: 20px; }
+    }
 </style>
 @endsection
 

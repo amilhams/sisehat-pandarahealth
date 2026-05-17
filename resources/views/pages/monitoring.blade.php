@@ -2,6 +2,22 @@
 
 @section('title', 'Monitoring Live')
 
+@section('styles')
+<style>
+    .monitoring-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    @media (max-width: 768px) {
+        .monitoring-grid { grid-template-columns: 1fr; }
+        .header-section { flex-direction: column; align-items: flex-start; gap: 16px; }
+        .header-section > div:last-child { width: 100%; justify-content: space-between; }
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="header-section mb-32 flex-between">
     <div>
@@ -24,7 +40,7 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+<div class="monitoring-grid">
     <!-- Total Responden -->
     <div class="card">
         <span class="stat-label">Total Responden</span>

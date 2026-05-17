@@ -88,6 +88,18 @@
         cursor: pointer; outline: none; transition: border-color 0.2s;
     }
     .sort-select:hover { border-color: #555; }
+    
+    .profile-actions { margin-left: auto; text-align: right; display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+    .umkm-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+    @media (max-width: 768px) {
+        .profile-header { flex-direction: column; text-align: center; gap: 20px; padding: 24px; }
+        .profile-actions { margin-left: 0; align-items: center; width: 100%; }
+        .btn-password { width: 100%; justify-content: center; }
+        .umkm-header-row { flex-direction: column; align-items: flex-start; gap: 16px; }
+        .sort-wrapper { width: 100%; }
+        .sort-select { flex: 1; }
+    }
 </style>
 
 <div class="profile-header">
@@ -121,7 +133,7 @@
             </div>
         </div>
     </div>
-    <div style="margin-left: auto; text-align: right; display: flex; flex-direction: column; gap: 12px; align-items: flex-end;">
+    <div class="profile-actions">
         <a href="{{ route('profile.name') }}" class="btn-password" style="background: rgba(255,255,255,0.05);">
             <i class="fa-solid fa-user-pen"></i> Ubah Nama
         </a>
@@ -131,7 +143,7 @@
     </div>
 </div>
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<div class="umkm-header-row">
     <div class="section-title" style="margin-bottom: 0;">
         <i class="fa-solid fa-building-user"></i> Daftar UMKM Dikelola
     </div>
@@ -150,67 +162,69 @@
 </div>
 
 <div class="umkm-card">
-    <table class="umkm-table">
-        <thead>
-            <tr>
-                <th>Nama UMKM</th>
-                <th>Sektor Usaha</th>
-                <th>Karyawan</th>
-                <th>Status Assessment</th>
-                <th style="text-align: center;">Aksi</th>
-            </tr>
-        </thead>
-        <tbody id="umkmTableBody">
-            @forelse($umkms as $umkm)
-            @php
-                $latestAssessment = $umkm->assessments->first();
-                $employeeCount = $latestAssessment ? $latestAssessment->jumlah_karyawan : 0;
-                $hasAssessment = $umkm->assessments_count > 0;
-            @endphp
-            <tr data-name="{{ strtolower($umkm->nama_umkm) }}" 
-                data-sector="{{ strtolower($umkm->sektor_usaha ?? '') }}" 
-                data-employees="{{ $employeeCount }}"
-                data-status="{{ $hasAssessment ? 1 : 0 }}"
-                data-updated="{{ $umkm->updated_at->timestamp }}">
-                <td style="font-weight: 600;">{{ $umkm->nama_umkm }}</td>
-                <td style="color: #aaa;">{{ $umkm->sektor_usaha ?? '-' }}</td>
-                <td>
-                    @if($umkm->assessments->isNotEmpty())
-                        {{ $umkm->assessments->first()->jumlah_karyawan }} Orang
-                    @else
-                        <span style="color: #555;">N/A</span>
-                    @endif
-                </td>
-                <td>
-                    @if($umkm->assessments_count > 0)
-                        <span class="status-badge status-done">
-                            <i class="fa-solid fa-circle-check"></i> Sudah pernah membuat asessment
-                        </span>
-                    @else
-                        <span class="status-badge status-pending">
-                            <i class="fa-solid fa-circle-minus"></i> Belum pernah membuat asessment
-                        </span>
-                    @endif
-                </td>
-                <td style="text-align: center;">
-                    <form action="{{ route('umkm.destroy', $umkm->umkm_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus UMKM ini? Seluruh data assessment terkait akan ikut terhapus permanen.')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-delete" title="Hapus UMKM">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="4" style="text-align: center; padding: 40px; color: #555;">
-                    Belum ada data UMKM yang terdaftar.
-                </td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="umkm-table">
+            <thead>
+                <tr>
+                    <th>Nama UMKM</th>
+                    <th>Sektor Usaha</th>
+                    <th>Karyawan</th>
+                    <th>Status Assessment</th>
+                    <th style="text-align: center;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="umkmTableBody">
+                @forelse($umkms as $umkm)
+                @php
+                    $latestAssessment = $umkm->assessments->first();
+                    $employeeCount = $latestAssessment ? $latestAssessment->jumlah_karyawan : 0;
+                    $hasAssessment = $umkm->assessments_count > 0;
+                @endphp
+                <tr data-name="{{ strtolower($umkm->nama_umkm) }}" 
+                    data-sector="{{ strtolower($umkm->sektor_usaha ?? '') }}" 
+                    data-employees="{{ $employeeCount }}"
+                    data-status="{{ $hasAssessment ? 1 : 0 }}"
+                    data-updated="{{ $umkm->updated_at->timestamp }}">
+                    <td style="font-weight: 600;">{{ $umkm->nama_umkm }}</td>
+                    <td style="color: #aaa;">{{ $umkm->sektor_usaha ?? '-' }}</td>
+                    <td>
+                        @if($umkm->assessments->isNotEmpty())
+                            {{ $umkm->assessments->first()->jumlah_karyawan }} Orang
+                        @else
+                            <span style="color: #555;">N/A</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($umkm->assessments_count > 0)
+                            <span class="status-badge status-done">
+                                <i class="fa-solid fa-circle-check"></i> Sudah pernah membuat asessment
+                            </span>
+                        @else
+                            <span class="status-badge status-pending">
+                                <i class="fa-solid fa-circle-minus"></i> Belum pernah membuat asessment
+                            </span>
+                        @endif
+                    </td>
+                    <td style="text-align: center;">
+                        <form action="{{ route('umkm.destroy', $umkm->umkm_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus UMKM ini? Seluruh data assessment terkait akan ikut terhapus permanen.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-delete" title="Hapus UMKM">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px; color: #555;">
+                        Belum ada data UMKM yang terdaftar.
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @if(session('success'))

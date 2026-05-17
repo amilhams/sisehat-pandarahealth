@@ -79,6 +79,31 @@
     .btn-prev { background: transparent; border: 1px solid #333; color: var(--text-secondary); }
     .btn-next { background: #fff; border: none; color: #000; }
     .btn-next:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    @media (max-width: 768px) {
+        .stepper-container { margin: 24px auto; padding: 0 16px; }
+        .factor-card { padding: 24px 20px; }
+        .factor-name { font-size: 24px; }
+        
+        .options-grid {
+            display: flex !important;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 12px;
+            gap: 12px;
+        }
+        .option-btn {
+            min-width: 100px;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+        }
+        
+        .nav-footer { flex-direction: column; gap: 16px; }
+        .btn-nav { justify-content: center; width: 100%; }
+        
+        .progress-step { width: 28px; height: 28px; font-size: 11px; }
+    }
 </style>
 @endsection
 

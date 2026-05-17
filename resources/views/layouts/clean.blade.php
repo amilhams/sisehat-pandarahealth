@@ -16,21 +16,49 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
+    <style>
+        .topbar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            height: 60px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-color);
+            flex-shrink: 0;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 860px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .topbar-header {
+                padding: 0 20px;
+            }
+            .main-content {
+                padding: 24px 16px;
+            }
+        }
+        @media (max-width: 480px) {
+            .topbar-header {
+                padding: 0 16px;
+            }
+            .main-content {
+                padding: 16px 12px;
+            }
+        }
+    </style>
+
     @yield('styles')
 </head>
 <body style="background: var(--bg-color); min-height: 100vh; display: flex; flex-direction: column;">
 
     <!-- Topbar -->
-    <header style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 40px;
-        height: 60px;
-        border-bottom: 1px solid var(--border-color);
-        background: var(--bg-color);
-        flex-shrink: 0;
-    ">
+    <header class="topbar-header">
         <div style="font-size: 15px; font-weight: 700;">
             Pandara <span style="font-weight: 400; color: var(--text-secondary);">Health</span>
         </div>
@@ -50,7 +78,7 @@
     </header>
 
     <!-- Page Content -->
-    <main style="flex: 1; padding: 40px; max-width: 860px; width: 100%; margin: 0 auto;">
+    <main class="main-content">
         @yield('content')
     </main>
 

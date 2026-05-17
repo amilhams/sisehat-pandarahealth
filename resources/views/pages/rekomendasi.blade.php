@@ -114,6 +114,21 @@
         display: flex; align-items: center; gap: 6px; transition: all .2s;
     }
     .prio-btn:hover { background: #222; color: #fff; border-color: #555; }
+
+    .rek-dropdowns { display: flex; gap: 12px; }
+
+    @media (max-width: 1024px) {
+        .rek-grid { grid-template-columns: 1fr; }
+        .rek-left-col { position: relative; top: 0; }
+        .rek-meta-row { flex-direction: column; align-items: flex-start; gap: 16px; }
+    }
+    
+    @media (max-width: 768px) {
+        .rek-dropdowns { flex-direction: column; }
+        .rek-select { width: 100%; min-width: 100%; }
+        .rek-title { font-size: 28px; }
+        .gauge-card { padding: 24px 20px; }
+    }
 </style>
 @endsection
 
@@ -123,7 +138,7 @@
 <div class="rek-title">Rekomendasi Strategis</div>
 
 {{-- Dropdowns --}}
-<div style="display: flex; gap: 12px;">
+<div class="rek-dropdowns">
     @if(isset($all_umkms) && $all_umkms->count() > 1)
         <select class="rek-select" onchange="window.location.href='?umkm_id=' + this.value">
             @foreach($all_umkms as $u)

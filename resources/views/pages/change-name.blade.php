@@ -40,6 +40,11 @@
     .btn-back:hover { color: #fff; }
 
     .error-msg { color: #f87171; font-size: 12px; margin-top: 4px; }
+
+    @media (max-width: 480px) {
+        .auth-card { padding: 32px 20px; margin: 30px auto; }
+        .auth-header h1 { font-size: 18px; }
+    }
 </style>
 
 <div class="auth-card">

@@ -354,7 +354,7 @@
                 flex-direction: column;
                 text-align: center;
                 padding-top: 0;
-                gap: 5rem;
+                gap: 4rem;
             }
             .hero-content {
                 max-width: 100%;
@@ -379,8 +379,10 @@
             }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
+            .container { padding: 0 1.5rem; }
             h1 { font-size: 2.5rem; }
+            .hero { gap: 3rem; }
             .visual-stack {
                 grid-template-columns: 1fr;
             }
@@ -391,6 +393,14 @@
                 transform: translateY(-10px);
             }
             .footer-content { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 2rem; letter-spacing: -1px; }
+            .subtext { font-size: 1rem; }
+            .cta-group { flex-direction: column; width: 100%; gap: 1rem; }
+            .btn { width: 100%; }
+            .feature-item { padding: 2rem; }
         }
     </style>
 </head>

@@ -1,36 +1,36 @@
 nama_factor,pertanyaan,question_role,urutan
-Institutional resources,Does your business have a Business Identification Number (NIB)?,owner,1
-Institutional resources,Have you received any government funding assistance to support your business?,owner,2
-Institutional resources,"Have you participated in any government-organized activities (e.g., training, workshops, or exhibitions)?",owner,3
-Institutional resources,Do you collaborate with other merchants or businesses to grow your business?,owner,4
-Institutional resources,"Do you use digital marketing (e.g., social media, websites, or online ads) to promote your business?",owner,5
-Institutional resources,What is the primary source of financial capital for your business?,owner,6
-Leader involvement,Your leader to employees on a personal level ,employee,7
-Leader involvement,Your leader act as a role model for employees,employee,8
-Leader involvement,Your leader to implementing ideas or suggestions from employees,employee,9
-Leader involvement,Your leader directly involved in day-to-day work,employee,10
-Leader involvement,Your leader actively participate in training new employees,employee,11
-Leader involvement,Your leader treat employees fairly when giving punishments and rewards,employee,12
-Operational stability,Workplace is free from job-related accidents,employee,13
-Operational stability,I am satisfied with the working hours set in this company,employee,14
-Operational stability,My workload is manageable,employee,15
-Operational stability,"The physical working conditions (e.g., noise, lighting, temperature) are comfortable",employee,16
-Operational stability,Most of employees are responsible and rarely miss work without valid reasons,employee,17
-Organizational values,I feel free to talk about work-related difficulties with my leader or colleagues,employee,18
-Organizational values,The atmosphere in my workplace is positive and supportive,employee,19
-Organizational values,The morale of employees in my workplace is generally high,employee,20
-Organizational values,Employees in my workplace help each other when needed,employee,21
-Organizational values,The level of trust among employees in my workplace is very strong,employee,22
-Organizational values,Teamwork in my workplace is effective,employee,23
-Organizational values,Employees in my workplace treat each other with respect,employee,24
-Work environment quality,Employees in my workplace view their work as a form of dedication or worship,employee,25
-Work environment quality,Working capital is adequate for daily business operations,owner,26
-Work environment quality,The company is able to pay employee salaries on time,owner,27
-Work environment quality,The equipment/machinery is in good condition and functions optimally,owner,28
-Work environment quality,The business supply chain runs smoothly without significant disruptions,owner,29
-Work environment quality,The demand for products/services is predictable.,owner,30
-Economics performance,The quality of business's long-term relationships with customers,owner,31
-Economics performance,Our business's ability to reach new markets or customers is excellent,owner,32
-Economics performance,Our business's sales growth over the past year has been very satisfactory,owner,33
-Economics performance,"Our business's liabilities (e.g., loans, debts) are very manageable",owner,34
-Economics performance,Our business's cash flow situation is very healthy and stable,owner,35
+"Institutional resources","Apakah bisnis Anda memiliki Nomor Induk Berusaha (NIB)?",owner,1
+"Institutional resources","Apakah Anda pernah menerima bantuan dana pemerintah untuk mendukung bisnis Anda?",owner,2
+"Institutional resources","Apakah Anda pernah mengikuti kegiatan yang diselenggarakan pemerintah (misal: pelatihan, lokakarya, atau pameran)?",owner,3
+"Institutional resources","Apakah Anda berkolaborasi dengan pedagang atau bisnis lain untuk mengembangkan bisnis Anda?",owner,4
+"Institutional resources","Apakah Anda menggunakan pemasaran digital (misal: media sosial, website, atau iklan online) untuk mempromosikan bisnis Anda?",owner,5
+"Institutional resources","Apa sumber modal utama untuk bisnis Anda?",owner,6
+"Leader involvement","Pemimpin Anda peduli terhadap karyawan secara personal",employee,7
+"Leader involvement","Pemimpin Anda bertindak sebagai panutan bagi karyawan",employee,8
+"Leader involvement","Pemimpin Anda menerapkan ide atau saran dari karyawan",employee,9
+"Leader involvement","Pemimpin Anda terlibat langsung dalam pekerjaan sehari-hari",employee,10
+"Leader involvement","Pemimpin Anda secara aktif berpartisipasi dalam melatih karyawan baru",employee,11
+"Leader involvement","Pemimpin Anda memperlakukan karyawan secara adil saat memberikan hukuman dan penghargaan",employee,12
+"Operational stability","Tempat kerja bebas dari kecelakaan terkait pekerjaan",employee,13
+"Operational stability","Saya puas dengan jam kerja yang ditetapkan di perusahaan ini",employee,14
+"Operational stability","Beban kerja saya dapat dikelola dengan baik",employee,15
+"Operational stability","Kondisi fisik tempat kerja (misal: kebisingan, pencahayaan, suhu) nyaman",employee,16
+"Operational stability","Sebagian besar karyawan bertanggung jawab dan jarang membolos tanpa alasan yang sah",employee,17
+"Organizational values","Saya merasa bebas untuk membicarakan kesulitan terkait pekerjaan dengan pimpinan atau rekan kerja saya",employee,18
+"Organizational values","Suasana di tempat kerja saya positif dan suportif",employee,19
+"Organizational values","Semangat kerja karyawan di tempat kerja saya secara umum tinggi",employee,20
+"Organizational values","Karyawan di tempat kerja saya saling membantu saat dibutuhkan",employee,21
+"Organizational values","Tingkat kepercayaan antar karyawan di tempat kerja saya sangat kuat",employee,22
+"Organizational values","Kerja sama tim di tempat kerja saya efektif",employee,23
+"Organizational values","Karyawan di tempat kerja saya saling memperlakukan dengan hormat",employee,24
+"Work environment quality","Karyawan di tempat kerja saya memandang pekerjaan mereka sebagai bentuk dedikasi atau ibadah",employee,25
+"Work environment quality","Modal kerja memadai untuk operasi bisnis sehari-hari",owner,26
+"Work environment quality","Perusahaan mampu membayar gaji karyawan tepat waktu",owner,27
+"Work environment quality","Peralatan/mesin dalam kondisi baik dan berfungsi optimal",owner,28
+"Work environment quality","Rantai pasokan bisnis berjalan lancar tanpa gangguan signifikan",owner,29
+"Work environment quality","Permintaan untuk produk/layanan dapat diprediksi",owner,30
+"Economics performance","Kualitas hubungan jangka panjang bisnis dengan pelanggan sangat baik",owner,31
+"Economics performance","Kemampuan bisnis kami untuk menjangkau pasar atau pelanggan baru sangat baik",owner,32
+"Economics performance","Pertumbuhan penjualan bisnis kami selama setahun terakhir sangat memuaskan",owner,33
+"Economics performance","Kewajiban bisnis kami (misalnya, pinjaman, hutang) sangat dapat dikelola",owner,34
+"Economics performance","Situasi arus kas bisnis kami sangat sehat dan stabil",owner,35

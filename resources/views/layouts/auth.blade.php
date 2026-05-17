@@ -115,6 +115,12 @@
             margin-top: 28px; font-size: 11px; color: #3a3a3a;
             text-align: center; position: relative; z-index: 1;
         }
+
+        @media (max-width: 480px) {
+            .auth-card { padding: 32px 20px; }
+            .auth-title { font-size: 24px; }
+            .field-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+        }
     </style>
 </head>
 <body>

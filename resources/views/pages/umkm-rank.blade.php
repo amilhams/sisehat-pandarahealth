@@ -103,22 +103,24 @@
 </div>
 
 <div class="table-card">
-    <table class="umkm-table" id="umkmTable">
-        <thead>
-            <tr>
-                <th style="width: 80px; text-align: center;">Rank</th>
-                <th>Nama UMKM</th>
-                <th>Sektor Usaha</th>
-                <th>Skor Terakhir</th>
-                <th>Status</th>
-                <th>Tgl Terdaftar</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data will be populated here via AJAX -->
-        </tbody>
-    </table>
-    
+    <div class="table-responsive">
+        <table class="umkm-table" id="umkmTable">
+            <thead>
+                <tr>
+                    <th style="width: 80px; text-align: center;">Rank</th>
+                    <th>Nama UMKM</th>
+                    <th>Sektor Usaha</th>
+                    <th>Skor Terakhir</th>
+                    <th>Status</th>
+                    <th>Tgl Terdaftar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be populated here via AJAX -->
+            </tbody>
+        </table>
+    </div>
+
     <div id="noResults" class="empty-state" style="display: none;">
         <i class="fa-solid fa-store-slash"></i>
         <h3>Tidak ada hasil</h3>
