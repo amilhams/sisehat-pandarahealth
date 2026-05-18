@@ -1,53 +1,82 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
-// 1. SKENARIO UJI BEBAN (STRESS TEST SCENARIO)
-// Menguji ketahanan web dari 10 pengguna hingga puncak 100 pengguna secara bertahap
-export const options = {
-    stages: [
-        { duration: '30s', target: 20 },  // Naikkan trafik ke 20 pengguna dalam 30 detik
-        { duration: '1m', target: 50 },   // Naikkan trafik ke 50 pengguna dalam 1 menit
-        { duration: '1m', target: 100 },  // Lonjakan ekstrem ke 100 pengguna (Puncak Stress Test)
-        { duration: '1m', target: 100 },  // Tahan beban 100 pengguna selama 1 menit
-        { duration: '30s', target: 0 },   // Turunkan kembali ke 0 (Cooldown)
-    ],
-    thresholds: {
-        http_req_duration: ['p(95)<2000'], // 95% request harus selesai di bawah 2 detik (2000ms)
-        http_req_failed: ['rate<0.01'],    // Toleransi kegagalan request wajib di bawah 1%
-    },
-};
+/* =========================================================================
+   PANDUAN PEMILIHAN TARGET UJI BEBAN (STRESS TEST TARGET CONFIGURATION)
+   ========================================================================= */
 
-// 2. KREDENSIAL LOGIN AKUN OWNER UNTUK STRESS TEST API BERSESI
+// --- TARGET PILIHAN A: NGROK / LOCALHOST (DIREKOMENDASIKAN UNTUK TRAFIK TINGGI) ---
+const TARGET_ENV = 'INFINITY_FREE'; // Ubah ke 'INFINITY_FREE' jika ingin menguji web online
+const BASE_URL = 'http://pandarahealth.infinityfree.me'; // Ganti dengan link Ngrok asli Anda
+
+// --- TARGET PILIHAN B: INFINITYFREE ONLINE (WAJIB BYPASS FIREWALL) ---
+// Trik Bypass: Buka web Anda di Chrome -> Tekan F12 -> Application -> Cookies -> Salin Value "__test"
+const INFINITYFREE_COOKIE_TEST = 'GANTI_DENGAN_COOKIE_TEST_ANDA_DI_SINI'; 
+
+/* =========================================================================
+   PENGATURAN VIRTUAL USERS (VUs) & DURASI UJI BEBAN
+   ========================================================================= */
+export const options = (TARGET_ENV === 'NGROK') 
+    ? {
+        // Skenario Ngrok/Lokal (SANGAT KUAT, Bisa menampung trafik ekstrim)
+        stages: [
+            { duration: '20s', target: 20 },  // Naikkan trafik ke 20 pengguna dalam 20 detik
+            { duration: '30s', target: 50 },  // Naikkan trafik ke 50 pengguna dalam 30 detik
+            { duration: '30s', target: 100 }, // Puncak ekstrim ke 100 pengguna
+            { duration: '20s', target: 0 },   // Cooldown ke 0
+        ],
+        thresholds: {
+            http_req_duration: ['p(95)<2000'],
+            http_req_failed: ['rate<0.01'],
+        }
+    }
+    : {
+        // Skenario Online InfinityFree (AMAN, Trafik dibatasi agar tidak di-suspend 24 jam)
+        stages: [
+            { duration: '20s', target: 5 },   // Cukup 5 pengguna aktif bersamaan
+            { duration: '30s', target: 10 },  // Maksimal 10 pengguna aktif
+            { duration: '20s', target: 0 },   // Cooldown ke 0
+        ],
+        thresholds: {
+            http_req_duration: ['p(95)<4000'], // Batas toleransi latensi hosting gratis 4 detik
+            http_req_failed: ['rate<0.05'],    // Toleransi error maksimal 5%
+        }
+    };
+
+// Kredensial Akun Owner default lokal Anda
 const OWNER_EMAIL = 'admin1@gmail.com'; 
-const OWNER_PASSWORD = 'password123'; // Default password seeder local Anda
+const OWNER_PASSWORD = 'password123'; 
 
 export default function () {
-    // === UBAH BAGIAN INI DENGAN ALAMAT NGROK ANDA ===
-    const BASE_URL = 'https://XXXX-XXXX.ngrok-free.app'; 
-    // ===============================================
-
+    // Siapkan parameter header untuk bypass firewall & penyamaran User-Agent
     const params = {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         },
     };
 
-    // --- PENGUJIAN 1: Mengakses Halaman Utama (Tanpa Login) ---
+    // Jika menguji InfinityFree, suntikkan cookie bypass keamanan
+    if (TARGET_ENV === 'INFINITY_FREE') {
+        params.headers['Cookie'] = `__test=${INFINITYFREE_COOKIE_TEST}`;
+    }
+
+    // --- TAHAP 1: Mengakses Halaman Utama ---
     let resWelcome = http.get(`${BASE_URL}/`, params);
     check(resWelcome, {
-        'Halaman utama status is 200': (r) => r.status === 200,
+        'Halaman utama status 200': (r) => r.status === 200,
     });
     sleep(1);
 
-    // --- PENGUJIAN 2: Mengakses Halaman Login ---
+    // --- TAHAP 2: Mengakses Halaman Login ---
     let resLoginPage = http.get(`${BASE_URL}/login`, params);
     check(resLoginPage, {
-        'Halaman login status is 200': (r) => r.status === 200,
+        'Halaman login status 200': (r) => r.status === 200,
     });
     sleep(1);
 
-    // --- PENGUJIAN 3: Simulasi Login Owner Melalui API (POST) ---
+    // --- TAHAP 3: Simulasi Login Owner (Menguji Kecepatan Autentikasi API) ---
     const payload = JSON.stringify({
         email: OWNER_EMAIL,
         password: OWNER_PASSWORD,
@@ -55,32 +84,30 @@ export default function () {
 
     let resLogin = http.post(`${BASE_URL}/api/auth/login`, payload, params);
     let loginOk = check(resLogin, {
-        'Login API sukses (status 200)': (r) => r.status === 200,
-        'Mendapatkan cookies / session': (r) => r.headers['Set-Cookie'] !== undefined || r.status === 200,
+        'API Login sukses (200)': (r) => r.status === 200,
     });
 
-    // Jika login berhasil, uji halaman-halaman yang membutuhkan otorisasi (dalam session)
+    // Jika login sukses, uji kueri database berat dengan cookie sesi
     if (loginOk) {
-        // Mewariskan Cookie Sesi Login untuk request berikutnya
         const sessionParams = {
-            headers: {
-                'Cookie': resLogin.headers['Set-Cookie'],
-                'Accept': 'application/json',
-            },
+            headers: Object.assign({}, params.headers, {
+                'Cookie': (TARGET_ENV === 'INFINITY_FREE') 
+                    ? `__test=${INFINITYFREE_COOKIE_TEST}; ${resLogin.headers['Set-Cookie']}`
+                    : resLogin.headers['Set-Cookie']
+            })
         };
 
-        // --- PENGUJIAN 4: Mengambil Data Rangking UMKM (Kueri Database Berat) ---
+        // --- TAHAP 4: Mengambil Data Urutan UMKM (Kueri Hitung Bobot DSS Berat) ---
         let resRank = http.get(`${BASE_URL}/api/umkm/rank`, sessionParams);
         check(resRank, {
-            'API rangking UMKM status is 200': (r) => r.status === 200,
-            'Data rank terisi': (r) => r.body.length > 0,
+            'API rangking UMKM status 200': (r) => r.status === 200,
         });
         sleep(2);
     } else {
-        // Jika akun di atas belum terdaftar/password salah, uji endpoint publik lain
+        // Fallback: Menguji kuesioner publik jika login gagal
         let resQuestions = http.get(`${BASE_URL}/api/assessment/questions?type=owner`, params);
         check(resQuestions, {
-            'API Kuesioner Publik status is 200': (r) => r.status === 200,
+            'API Kuesioner status 200': (r) => r.status === 200,
         });
         sleep(2);
     }

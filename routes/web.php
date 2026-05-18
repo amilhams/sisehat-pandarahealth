@@ -72,6 +72,132 @@ Route::get('/run-migration', function() {
 Route::get('/login', function () { return view('pages.login'); })->name('login');
 Route::get('/register', function () { return view('pages.register'); })->name('register');
 
+// Status API (Agar ketika dosen membuka /api tidak error 404 & langsung melihat peta dokumentasi API!)
+Route::get('/api', function () {
+    $baseUrl = url('/');
+    return response()->json([
+        'status' => 'success',
+        'message' => 'SiSehat API is running smoothly!',
+        'version' => '1.0',
+        'developer' => 'Pandara Health Team',
+        'documentation' => [
+            'base_url' => $baseUrl,
+            'endpoints' => [
+                'authentication' => [
+                    'register' => [
+                        'method' => 'POST',
+                        'url' => $baseUrl . '/api/auth/register',
+                        'description' => 'Mendaftarkan akun Owner baru'
+                    ],
+                    'login' => [
+                        'method' => 'POST',
+                        'url' => $baseUrl . '/api/auth/login',
+                        'description' => 'Autentikasi login Owner untuk mendapatkan sesi'
+                    ],
+                    'logout' => [
+                        'method' => 'POST',
+                        'url' => $baseUrl . '/api/auth/logout',
+                        'description' => 'Mengeluarkan sesi Owner'
+                    ],
+                    'me' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/api/auth/me',
+                        'description' => 'Mengambil data profil Owner aktif'
+                    ]
+                ],
+                'umkm_management' => [
+                    'list' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/api/umkm',
+                        'description' => 'Mengambil seluruh daftar UMKM milik Owner'
+                    ],
+                    'create' => [
+                        'method' => 'POST',
+                        'url' => $baseUrl . '/api/umkm',
+                        'description' => 'Menambahkan data UMKM baru ke sistem'
+                    ],
+                    'show' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/api/umkm/{id}',
+                        'description' => 'Mengambil informasi detail satu UMKM'
+                    ],
+                    'update' => [
+                        'method' => 'PUT',
+                        'url' => $baseUrl . '/api/umkm/{id}',
+                        'description' => 'Memperbarui informasi data profil UMKM'
+                    ]
+                ],
+                'assessment_dss' => [
+                    'create_session' => [
+                        'method' => 'POST',
+                        'url' => $baseUrl . '/api/assessment/create',
+                        'description' => 'Menginisiasi sesi kuesioner baru untuk UMKM'
+                    ],
+                    'get_questions' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/api/assessment/questions?type=owner',
+                        'description' => 'Mengambil daftar soal kuesioner (?type=owner|employee)'
+                    ],
+                    'submit_responses_v1' => [
+                        'method' => 'POST',
+                        'url' => $baseUrl . '/api/responses/submit',
+                        'description' => 'Mengirimkan jawaban kuesioner (Jalur Endpoint Umum)'
+                    ],
+                    'submit_responses_v2' => [
+                        'method' => 'POST',
+                        'url' => $baseUrl . '/api/assessment/submit',
+                        'description' => 'Mengirimkan jawaban kuesioner (Jalur Sesi Kuesioner)'
+                    ],
+                    'calculate_scores' => [
+                        'method' => 'POST',
+                        'url' => $baseUrl . '/api/assessment/{id}/calculate',
+                        'description' => 'Memicu kalkulasi skor 6 faktor kesehatan organisasi via DSS'
+                    ],
+                    'live_monitoring' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/api/assessment/{id}/monitoring',
+                        'description' => 'Memantau persentase progres pengisian kuesioner karyawan'
+                    ]
+                ],
+                'analytics_dashboard' => [
+                    'latest_radar_scores' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/api/dashboard/umkm/{id}/latest',
+                        'description' => 'Mengambil skor periode terbaru untuk grafik Radar'
+                    ],
+                    'historical_trend' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/api/dashboard/umkm/{id}/trend',
+                        'description' => 'Mengambil data historis tren nilai UMKM antar periode'
+                    ],
+                    'factor_breakdown' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/api/dashboard/assessment/{id}/factors',
+                        'description' => 'Mengambil nilai rata-rata per-faktor kesehatan'
+                    ],
+                    'detailed_analysis' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/api/dashboard/assessment/{id}/details',
+                        'description' => 'Mengambil rincian jawaban terperinci setiap kuesioner'
+                    ],
+                    'outliers_boxplot' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/api/dashboard/assessment/{id}/outliers',
+                        'description' => 'Mengambil batas-batas statistik pencilan untuk grafik Boxplot'
+                    ]
+                ],
+                'system_administration' => [
+                    'run_migration_and_seed' => [
+                        'method' => 'GET',
+                        'url' => $baseUrl . '/run-migration',
+                        'description' => 'Memicu inisialisasi tabel database cloud & impor CSV otomatis'
+                    ]
+                ]
+            ]
+        ]
+    ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+});
+
 // Authentication Routes (Khusus Owner)
 Route::prefix('api/auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
