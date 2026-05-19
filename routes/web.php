@@ -72,49 +72,6 @@ Route::get('/run-migration', function() {
 Route::get('/login', function () { return view('pages.login'); })->name('login');
 Route::get('/register', function () { return view('pages.register'); })->name('register');
 
-Route::get('/backend-simulation', function () {
-    return response()->json([
-        'status' => 'online',
-        'timestamp' => now()->toDateTimeString(),
-        'service' => 'SiSehat Core API Engine',
-        'environment' => app()->environment(),
-        'engine' => [
-            'framework' => 'Laravel Monolith (API Mode)',
-            'version' => app()->version(),
-            'php' => PHP_VERSION,
-            'port' => request()->getPort()
-        ],
-        'resources' => [
-            'cpu_usage' => '14.2%',
-            'memory_allocated' => '32.5 MB',
-            'database_status' => 'connected (mysql)'
-        ],
-        'simulated_gateway_logs' => [
-            [
-                'time' => now()->subSeconds(2)->toDateTimeString(),
-                'method' => 'GET',
-                'path' => '/api/dashboard/assessment/1/outliers',
-                'status' => 200,
-                'duration' => '22ms'
-            ],
-            [
-                'time' => now()->subSeconds(15)->toDateTimeString(),
-                'method' => 'POST',
-                'path' => '/api/assessment/create',
-                'status' => 201,
-                'duration' => '85ms'
-            ],
-            [
-                'time' => now()->subMinutes(2)->toDateTimeString(),
-                'method' => 'GET',
-                'path' => '/api/umkm?owner_id=1',
-                'status' => 200,
-                'duration' => '14ms'
-            ]
-        ],
-        'documentation_url' => url('/api/docs')
-    ], 200, [], JSON_PRETTY_PRINT);
-})->name('backend.simulation');
 Route::get('/api/docs', function () { return view('pages.api-docs'); })->name('api.docs');
 
 // Status API (Agar ketika dosen membuka /api tidak error 404 & langsung melihat peta dokumentasi API!)
