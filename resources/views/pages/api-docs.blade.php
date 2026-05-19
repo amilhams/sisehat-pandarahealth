@@ -772,9 +772,9 @@
                                 <tbody>
                                     <tr>
                                         <td class="param-name">id</td>
-                                        <td class="param-type">integer</td>
+                                        <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>ID unik UMKM</td>
+                                        <td>ID unik UMKM (Format: UMKMxxx)</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -787,7 +787,7 @@
                                 <div class="tester-inputs">
                                     <div class="tester-input-group">
                                         <label class="tester-label">id (UMKM ID)</label>
-                                        <input type="number" class="tester-input param-field" data-param="id" value="1">
+                                        <input type="text" class="tester-input param-field" data-param="id" value="UMKM001">
                                     </div>
                                 </div>
                                 <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
@@ -832,9 +832,9 @@
                                 <tbody>
                                     <tr>
                                         <td class="param-name">id</td>
-                                        <td class="param-type">integer</td>
+                                        <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>ID unik UMKM</td>
+                                        <td>ID unik UMKM (Format: UMKMxxx)</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -907,9 +907,9 @@
                                 <tbody>
                                     <tr>
                                         <td class="param-name">umkm_id</td>
-                                        <td class="param-type">integer</td>
+                                        <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>ID UMKM target survei</td>
+                                        <td>ID UMKM target survei (Format: UMKMxxx)</td>
                                     </tr>
                                     <tr>
                                         <td class="param-name">jumlah_karyawan</td>
@@ -1201,9 +1201,9 @@
                                 <tbody>
                                     <tr>
                                         <td class="param-name">id</td>
-                                        <td class="param-type">integer</td>
+                                        <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>ID unik UMKM</td>
+                                        <td>ID unik UMKM (Format: UMKMxxx)</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1216,7 +1216,7 @@
                                 <div class="tester-inputs">
                                     <div class="tester-input-group">
                                         <label class="tester-label">id (UMKM ID)</label>
-                                        <input type="number" class="tester-input param-field" data-param="id" value="1">
+                                        <input type="text" class="tester-input param-field" data-param="id" value="UMKM001">
                                     </div>
                                 </div>
                                 <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
@@ -1261,9 +1261,9 @@
                                 <tbody>
                                     <tr>
                                         <td class="param-name">id</td>
-                                        <td class="param-type">integer</td>
+                                        <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>ID unik UMKM</td>
+                                        <td>ID unik UMKM (Format: UMKMxxx)</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1276,7 +1276,7 @@
                                 <div class="tester-inputs">
                                     <div class="tester-input-group">
                                         <label class="tester-label">id (UMKM ID)</label>
-                                        <input type="number" class="tester-input param-field" data-param="id" value="1">
+                                        <input type="text" class="tester-input param-field" data-param="id" value="UMKM001">
                                     </div>
                                 </div>
                                 <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
