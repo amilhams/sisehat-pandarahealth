@@ -237,6 +237,7 @@ body {
 }
 
 .menu-toggle {
+    display: none;
     background: transparent;
     border: none;
     color: var(--text-primary);
@@ -281,6 +282,9 @@ body {
 @media (max-width: 768px) {
     .mobile-header {
         display: flex;
+    }
+    .menu-toggle {
+        display: block;
     }
     .sidebar {
         transform: translateX(-100%);

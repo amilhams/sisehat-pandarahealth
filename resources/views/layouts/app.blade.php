@@ -91,6 +91,16 @@
             font-size: 11px; color: #666; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
         }
+
+        /* Guarantee mobile header and menu toggle are hidden on desktop viewports */
+        @media (min-width: 769px) {
+            .mobile-header {
+                display: none !important;
+            }
+            .menu-toggle {
+                display: none !important;
+            }
+        }
     </style>
     @yield('styles')
 </head>
