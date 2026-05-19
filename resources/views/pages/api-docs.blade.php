@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiSehat API - Portal Pengembang</title>
+    <title>SiSehat API - Portal Developer</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -203,7 +203,7 @@
             background: var(--card-color);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             overflow: hidden;
             transition: border-color 0.2s;
         }
@@ -303,16 +303,17 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
+            margin-bottom: 8px;
         }
         .param-table th, .param-table td {
-            padding: 12px;
+            padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
         .param-table th {
             color: var(--text-secondary);
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
         }
         .param-name {
@@ -360,9 +361,6 @@
             background: #e2e8f0;
             transform: translateY(-1px);
         }
-        .btn-try:active {
-            transform: translateY(0);
-        }
 
         .api-tester {
             margin-top: 16px;
@@ -372,7 +370,7 @@
         }
         .tester-inputs {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 12px;
             margin-bottom: 16px;
         }
@@ -452,7 +450,7 @@
                 <span class="dev-badge">Portal Developer</span>
             </div>
             <a href="{{ route('beranda') }}" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i> Kembali ke Web Utama
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard Web
             </a>
         </div>
     </header>
@@ -463,22 +461,22 @@
         <aside class="sidebar">
             <h3 class="sidebar-title">Kategori API</h3>
             <ul class="nav-list">
-                <li class="nav-item active"><a href="#authentication">Authentication</a></li>
-                <li class="nav-item"><a href="#umkm">UMKM Management</a></li>
-                <li class="nav-item"><a href="#assessment">Assessment & DSS</a></li>
-                <li class="nav-item"><a href="#analytics">Analytics Dashboard</a></li>
-                <li class="nav-item"><a href="#system">System Admin</a></li>
+                <li class="nav-item active"><a href="#authentication">1. Authentication</a></li>
+                <li class="nav-item"><a href="#umkm">2. UMKM Management</a></li>
+                <li class="nav-item"><a href="#assessment">3. Assessment & DSS</a></li>
+                <li class="nav-item"><a href="#analytics">4. Analytics Dashboard</a></li>
+                <li class="nav-item"><a href="#system">5. System Admin</a></li>
             </ul>
         </aside>
 
         <!-- API Content List -->
         <main class="api-content">
             
-            <!-- Section: Authentication -->
+            <!-- Section: 1. Authentication -->
             <section id="authentication">
                 <div class="section-header">
-                    <h2 class="section-title">Authentication API</h2>
-                    <p class="section-desc">API untuk menangani registrasi akun Owner baru, login autentikasi, logout sesi, dan pengambilan data owner aktif.</p>
+                    <h2 class="section-title">1. Authentication API</h2>
+                    <p class="section-desc">API untuk registrasi akun Owner baru, login, dan autentikasi status aktif.</p>
                 </div>
 
                 <!-- API 1: Register -->
@@ -488,7 +486,7 @@
                             <span class="method-badge method-post">POST</span>
                             <span class="route-path">/api/auth/register</span>
                         </div>
-                        <span class="route-desc">Registrasi Owner baru</span>
+                        <span class="route-desc">Registrasi Owner Baru</span>
                     </div>
                     <div class="endpoint-details">
                         <div class="detail-section">
@@ -507,17 +505,17 @@
                                         <td class="param-name">name</td>
                                         <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>Nama lengkap pendaftar Owner</td>
+                                        <td>Nama lengkap Owner baru</td>
                                     </tr>
                                     <tr>
                                         <td class="param-name">email</td>
                                         <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>Alamat email unik (untuk login)</td>
+                                        <td>Alamat email login yang unik</td>
                                     </tr>
                                     <tr>
                                         <td class="param-name">gender</td>
-                                        <td class="param-type">enum</td>
+                                        <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
                                         <td><code>laki-laki</code> atau <code>perempuan</code></td>
                                     </tr>
@@ -525,31 +523,16 @@
                                         <td class="param-name">password</td>
                                         <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>Kata sandi akun (min. 6 karakter)</td>
+                                        <td>Kata sandi minimal 6 karakter</td>
                                     </tr>
                                     <tr>
                                         <td class="param-name">password_confirmation</td>
                                         <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>Konfirmasi kata sandi harus persis sama</td>
+                                        <td>Konfirmasi kata sandi</td>
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        <div class="detail-section">
-                            <div class="detail-title">Response Sukses (201 Created)</div>
-                            <div class="code-container">
-                                <code class="code-block">{
-    "message": "Registrasi berhasil",
-    "data": {
-        "owner_id": 4,
-        "name": "Budi Santoso",
-        "email": "budi@perusahaan.com",
-        "gender": "laki-laki",
-        "created_at": "2026-05-19T04:14:32.000000Z"
-    }
-}</code>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -561,7 +544,7 @@
                             <span class="method-badge method-post">POST</span>
                             <span class="route-path">/api/auth/login</span>
                         </div>
-                        <span class="route-desc">Autentikasi masuk akun Owner</span>
+                        <span class="route-desc">Autentikasi Masuk Sesi</span>
                     </div>
                     <div class="endpoint-details">
                         <div class="detail-section">
@@ -580,7 +563,7 @@
                                         <td class="param-name">email</td>
                                         <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>Alamat email terdaftar</td>
+                                        <td>Email terdaftar</td>
                                     </tr>
                                     <tr>
                                         <td class="param-name">password</td>
@@ -591,39 +574,76 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- API 3: Logout -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="route-path">/api/auth/logout</span>
+                        </div>
+                        <span class="route-desc">Keluar dari Sesi</span>
+                    </div>
+                    <div class="endpoint-details">
                         <div class="detail-section">
-                            <div class="detail-title">Response Sukses (200 OK)</div>
-                            <div class="code-container">
-                                <code class="code-block">{
-    "message": "Login berhasil",
-    "data": {
-        "owner_id": 4,
-        "name": "Budi Santoso",
-        "email": "budi@perusahaan.com",
-        "gender": "laki-laki"
-    }
-}</code>
+                            <div class="detail-title">Keterangan</div>
+                            <p class="section-desc">Menghapus sesi login Owner yang aktif di browser.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 4: Me -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="route-path">/api/auth/me</span>
+                        </div>
+                        <span class="route-desc">Ambil Profil Aktif</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <button class="btn-try" onclick="showTester(this, '/api/auth/me', 'GET', [])">
+                                <i class="fa-solid fa-play"></i> Uji Coba Endpoint
+                            </button>
+                            <div class="api-tester">
+                                <div class="tester-inputs"></div>
+                                <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
+                                    <span class="btn-test-text">Kirim Request</span>
+                                    <div class="spinner"></div>
+                                </button>
+                                <div class="test-result-wrapper">
+                                    <div class="result-meta">
+                                        <span>Response:</span>
+                                        <span class="status-pill status-success">200 OK</span>
+                                    </div>
+                                    <div class="code-container">
+                                        <code class="code-block result-code"></code>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Section: UMKM Management -->
+            <!-- Section: 2. UMKM Management -->
             <section id="umkm">
                 <div class="section-header">
-                    <h2 class="section-title">UMKM Management API</h2>
-                    <p class="section-desc">API untuk mengelola data UMKM (Unit Usaha) organisasi, seperti mengambil seluruh UMKM, menambah unit baru, dan melihat informasi terperinci.</p>
+                    <h2 class="section-title">2. UMKM Management API</h2>
+                    <p class="section-desc">API untuk mengelola data unit bisnis (UMKM) yang dimiliki oleh Owner.</p>
                 </div>
 
-                <!-- API 3: List UMKM -->
+                <!-- API 5: List UMKM -->
                 <div class="endpoint-card">
                     <div class="endpoint-header">
                         <div class="endpoint-route">
                             <span class="method-badge method-get">GET</span>
                             <span class="route-path">/api/umkm</span>
                         </div>
-                        <span class="route-desc">Mengambil daftar UMKM berdasarkan Owner</span>
+                        <span class="route-desc">Ambil Semua Daftar UMKM</span>
                     </div>
                     <div class="endpoint-details">
                         <div class="detail-section">
@@ -642,7 +662,7 @@
                                         <td class="param-name">owner_id</td>
                                         <td class="param-type">integer</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>ID unik Owner yang ingin ditarik datanya</td>
+                                        <td>ID Owner pemilik unit UMKM</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -651,27 +671,24 @@
                             <button class="btn-try" onclick="showTester(this, '/api/umkm', 'GET', ['owner_id'])">
                                 <i class="fa-solid fa-play"></i> Uji Coba Endpoint
                             </button>
-                            
-                            <!-- Api Tester Panel -->
                             <div class="api-tester">
                                 <div class="tester-inputs">
                                     <div class="tester-input-group">
                                         <label class="tester-label">owner_id</label>
-                                        <input type="number" class="tester-input param-field" data-param="owner_id" placeholder="Masukkan owner_id (Contoh: 1)" value="1">
+                                        <input type="number" class="tester-input param-field" data-param="owner_id" value="1">
                                     </div>
                                 </div>
                                 <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
                                     <span class="btn-test-text">Kirim Request</span>
                                     <div class="spinner"></div>
                                 </button>
-                                
                                 <div class="test-result-wrapper">
                                     <div class="result-meta">
                                         <span>Response:</span>
-                                        <span class="status-pill status-success">200 OK</span>
+                                        <span class="status-pill"></span>
                                     </div>
                                     <div class="code-container">
-                                        <code class="code-block result-code">// Data hasil request akan muncul disini</code>
+                                        <code class="code-block result-code"></code>
                                     </div>
                                 </div>
                             </div>
@@ -679,14 +696,14 @@
                     </div>
                 </div>
 
-                <!-- API 4: Create UMKM -->
+                <!-- API 6: Create UMKM -->
                 <div class="endpoint-card">
                     <div class="endpoint-header">
                         <div class="endpoint-route">
                             <span class="method-badge method-post">POST</span>
                             <span class="route-path">/api/umkm</span>
                         </div>
-                        <span class="route-desc">Menambahkan UMKM baru</span>
+                        <span class="route-desc">Tambah UMKM Baru</span>
                     </div>
                     <div class="endpoint-details">
                         <div class="detail-section">
@@ -705,119 +722,40 @@
                                         <td class="param-name">owner_id</td>
                                         <td class="param-type">integer</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>ID unik Owner pemilik usaha</td>
+                                        <td>ID Owner yang terautentikasi</td>
                                     </tr>
                                     <tr>
                                         <td class="param-name">nama_umkm</td>
                                         <td class="param-type">string</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>Nama unit bisnis (maks 150 karakter)</td>
+                                        <td>Nama bisnis UMKM</td>
                                     </tr>
                                     <tr>
                                         <td class="param-name">sektor_usaha</td>
                                         <td class="param-type">string</td>
                                         <td><span class="param-opt">Opsional</span></td>
-                                        <td>Contoh: Retail / Makanan & Minuman / Jasa</td>
+                                        <td>Retail, F&B, Jasa, IT, dll.</td>
                                     </tr>
                                     <tr>
                                         <td class="param-name">umur_usaha</td>
                                         <td class="param-type">string</td>
                                         <td><span class="param-opt">Opsional</span></td>
-                                        <td>Contoh: 2 Tahun</td>
+                                        <td>Contoh: 3 tahun</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- Section: Assessment & DSS -->
-            <section id="assessment">
-                <div class="section-header">
-                    <h2 class="section-title">Assessment & DSS API</h2>
-                    <p class="section-desc">API untuk membuat sesi kuesioner, memicu perhitungan skor 6 faktor kesehatan organisasi via DSS, dan memantau respons karyawan.</p>
-                </div>
-
-                <!-- API 5: Get Questions -->
+                <!-- API 7: Show Detail UMKM -->
                 <div class="endpoint-card">
                     <div class="endpoint-header">
                         <div class="endpoint-route">
                             <span class="method-badge method-get">GET</span>
-                            <span class="route-path">/api/assessment/questions</span>
+                            <span class="route-path">/api/umkm/{id}</span>
                         </div>
-                        <span class="route-desc">Mengambil daftar pertanyaan kuesioner</span>
-                    </div>
-                    <div class="endpoint-details">
-                        <div class="detail-section">
-                            <div class="detail-title">Query Parameters</div>
-                            <table class="param-table">
-                                <thead>
-                                    <tr>
-                                        <th>Nama Parameter</th>
-                                        <th>Tipe</th>
-                                        <th>Status</th>
-                                        <th>Keterangan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="param-name">type</td>
-                                        <td class="param-type">string</td>
-                                        <td><span class="param-req">Wajib</span></td>
-                                        <td><code>owner</code> (untuk kuesioner Owner) atau <code>employee</code> (untuk Karyawan)</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="detail-section">
-                            <button class="btn-try" onclick="showTester(this, '/api/assessment/questions', 'GET', ['type'])">
-                                <i class="fa-solid fa-play"></i> Uji Coba Endpoint
-                            </button>
-                            
-                            <!-- Api Tester Panel -->
-                            <div class="api-tester">
-                                <div class="tester-inputs">
-                                    <div class="tester-input-group">
-                                        <label class="tester-label">type</label>
-                                        <input type="text" class="tester-input param-field" data-param="type" placeholder="Masukkan type (owner / employee)" value="owner">
-                                    </div>
-                                </div>
-                                <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
-                                    <span class="btn-test-text">Kirim Request</span>
-                                    <div class="spinner"></div>
-                                </button>
-                                
-                                <div class="test-result-wrapper">
-                                    <div class="result-meta">
-                                        <span>Response:</span>
-                                        <span class="status-pill status-success">200 OK</span>
-                                    </div>
-                                    <div class="code-container">
-                                        <code class="code-block result-code">// Data hasil request akan muncul disini</code>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section: Analytics Dashboard -->
-            <section id="analytics">
-                <div class="section-header">
-                    <h2 class="section-title">Analytics Dashboard API</h2>
-                    <p class="section-desc">API penyuplai data visual grafik dashboard, seperti nilai radar 6 faktor, tren historis, dan analisis pencilan Boxplot.</p>
-                </div>
-
-                <!-- API 6: Outliers Boxplot -->
-                <div class="endpoint-card">
-                    <div class="endpoint-header">
-                        <div class="endpoint-route">
-                            <span class="method-badge method-get">GET</span>
-                            <span class="route-path">/api/dashboard/assessment/{id}/outliers</span>
-                        </div>
-                        <span class="route-desc">Mengambil parameter statistik Boxplot (Q1, Q2, Q3, Outliers)</span>
+                        <span class="route-desc">Ambil Detail Satu UMKM</span>
                     </div>
                     <div class="endpoint-details">
                         <div class="detail-section">
@@ -836,36 +774,394 @@
                                         <td class="param-name">id</td>
                                         <td class="param-type">integer</td>
                                         <td><span class="param-req">Wajib</span></td>
-                                        <td>ID unik assessment yang ingin dihitung nilai pencilan boxplot-nya</td>
+                                        <td>ID unik UMKM</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="detail-section">
-                            <button class="btn-try" onclick="showTester(this, '/api/dashboard/assessment/{id}/outliers', 'GET', ['id'], true)">
+                            <button class="btn-try" onclick="showTester(this, '/api/umkm/{id}', 'GET', ['id'], true)">
                                 <i class="fa-solid fa-play"></i> Uji Coba Endpoint
                             </button>
-                            
-                            <!-- Api Tester Panel -->
                             <div class="api-tester">
                                 <div class="tester-inputs">
                                     <div class="tester-input-group">
-                                        <label class="tester-label">id (Assessment ID)</label>
-                                        <input type="number" class="tester-input param-field" data-param="id" placeholder="Masukkan ID Assessment (Contoh: 1)" value="1">
+                                        <label class="tester-label">id (UMKM ID)</label>
+                                        <input type="number" class="tester-input param-field" data-param="id" value="1">
                                     </div>
                                 </div>
                                 <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
                                     <span class="btn-test-text">Kirim Request</span>
                                     <div class="spinner"></div>
                                 </button>
-                                
                                 <div class="test-result-wrapper">
                                     <div class="result-meta">
                                         <span>Response:</span>
-                                        <span class="status-pill status-success">200 OK</span>
+                                        <span class="status-pill"></span>
                                     </div>
                                     <div class="code-container">
-                                        <code class="code-block result-code">// Data hasil request akan muncul disini</code>
+                                        <code class="code-block result-code"></code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 8: Update UMKM -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-put">PUT</span>
+                            <span class="route-path">/api/umkm/{id}</span>
+                        </div>
+                        <span class="route-desc">Perbarui Profil UMKM</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Path Parameters</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">id</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>ID unik UMKM</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-title">Request Body Parameters (JSON)</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">nama_umkm</td>
+                                        <td class="param-type">string</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>Nama baru bisnis UMKM</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="param-name">sektor_usaha</td>
+                                        <td class="param-type">string</td>
+                                        <td><span class="param-opt">Opsional</span></td>
+                                        <td>Retail, F&B, Jasa, dll.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="param-name">umur_usaha</td>
+                                        <td class="param-type">string</td>
+                                        <td><span class="param-opt">Opsional</span></td>
+                                        <td>Contoh: 4 tahun</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: 3. Assessment & DSS -->
+            <section id="assessment">
+                <div class="section-header">
+                    <h2 class="section-title">3. Assessment & DSS API</h2>
+                    <p class="section-desc">API untuk inisiasi asesmen organisasi, mengisi kuesioner, memantau respons karyawan, dan memicu perhitungan DSS.</p>
+                </div>
+
+                <!-- API 9: Create Session -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="route-path">/api/assessment/create</span>
+                        </div>
+                        <span class="route-desc">Inisiasi Sesi Asesmen Baru</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Request Body Parameters (JSON)</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">umkm_id</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>ID UMKM target survei</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="param-name">jumlah_karyawan</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>Target jumlah karyawan pengisi kuesioner</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="param-name">assessment_name</td>
+                                        <td class="param-type">string</td>
+                                        <td><span class="param-opt">Opsional</span></td>
+                                        <td>Nama periode survei (Default: Asesmen [Bulan Tahun])</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="param-name">expiry_days</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-opt">Opsional</span></td>
+                                        <td>Masa kedaluwarsa link (Default: 7 hari)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 10: Get Questions -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="route-path">/api/assessment/questions</span>
+                        </div>
+                        <span class="route-desc">Ambil Daftar Soal Kuesioner</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Query Parameters</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">type</td>
+                                        <td class="param-type">string</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td><code>owner</code> (kuesioner Owner) atau <code>employee</code> (kuesioner Karyawan)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="detail-section">
+                            <button class="btn-try" onclick="showTester(this, '/api/assessment/questions', 'GET', ['type'])">
+                                <i class="fa-solid fa-play"></i> Uji Coba Endpoint
+                            </button>
+                            <div class="api-tester">
+                                <div class="tester-inputs">
+                                    <div class="tester-input-group">
+                                        <label class="tester-label">type</label>
+                                        <input type="text" class="tester-input param-field" data-param="type" value="owner">
+                                    </div>
+                                </div>
+                                <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
+                                    <span class="btn-test-text">Kirim Request</span>
+                                    <div class="spinner"></div>
+                                </button>
+                                <div class="test-result-wrapper">
+                                    <div class="result-meta">
+                                        <span>Response:</span>
+                                        <span class="status-pill"></span>
+                                    </div>
+                                    <div class="code-container">
+                                        <code class="code-block result-code"></code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 11: Submit Response (Direct Path) -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="route-path">/api/responses/submit</span>
+                        </div>
+                        <span class="route-desc">Submit Jawaban Kuesioner (Umum)</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Request Body Parameters (JSON)</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">assessment_id</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>ID Sesi Asesmen aktif</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="param-name">responses</td>
+                                        <td class="param-type">array</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>Array objek jawaban: <code>[{"question_id": 1, "answer_value": 4}, ...]</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 12: Submit Response (Session Path) -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="route-path">/api/assessment/submit</span>
+                        </div>
+                        <span class="route-desc">Submit Jawaban Kuesioner (Employee Sesi)</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Request Body Parameters (JSON)</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">token</td>
+                                        <td class="param-type">string</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>Token aktif link kuesioner karyawan</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="param-name">responses</td>
+                                        <td class="param-type">array</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>Array objek jawaban: <code>[{"question_id": 20, "answer_value": 5}, ...]</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 13: Calculate Scores -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="route-path">/api/assessment/{id}/calculate</span>
+                        </div>
+                        <span class="route-desc">Pemicu Kalkulasi Rumus Kesehatan (DSS)</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Path Parameters</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">id</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>ID Asesmen yang ingin diproses skornya</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 14: Live Monitoring -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="route-path">/api/assessment/{id}/monitoring</span>
+                        </div>
+                        <span class="route-desc">Monitoring Persentase Progres Karyawan</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Path Parameters</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">id</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>ID Asesmen yang sedang dipantau</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="detail-section">
+                            <button class="btn-try" onclick="showTester(this, '/api/assessment/{id}/monitoring', 'GET', ['id'], true)">
+                                <i class="fa-solid fa-play"></i> Uji Coba Endpoint
+                            </button>
+                            <div class="api-tester">
+                                <div class="tester-inputs">
+                                    <div class="tester-input-group">
+                                        <label class="tester-label">id (Assessment ID)</label>
+                                        <input type="number" class="tester-input param-field" data-param="id" value="1">
+                                    </div>
+                                </div>
+                                <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
+                                    <span class="btn-test-text">Kirim Request</span>
+                                    <div class="spinner"></div>
+                                </button>
+                                <div class="test-result-wrapper">
+                                    <div class="result-meta">
+                                        <span>Response:</span>
+                                        <span class="status-pill"></span>
+                                    </div>
+                                    <div class="code-container">
+                                        <code class="code-block result-code"></code>
                                     </div>
                                 </div>
                             </div>
@@ -874,32 +1170,350 @@
                 </div>
             </section>
 
-            <!-- Section: System Admin -->
-            <section id="system">
+            <!-- Section: 4. Analytics Dashboard -->
+            <section id="analytics">
                 <div class="section-header">
-                    <h2 class="section-title">System Administration API</h2>
-                    <p class="section-desc">API internal sistem untuk pengelolaan lingkungan hosting database tanpa SSH.</p>
+                    <h2 class="section-title">4. Analytics Dashboard API</h2>
+                    <p class="section-desc">API penyuplai data hasil kalkulasi DSS siap pakai untuk grafik Radar, tren historis, dan boxplot statistik.</p>
                 </div>
 
-                <!-- API 7: Run Migration -->
+                <!-- API 15: Latest Radar Scores -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="route-path">/api/dashboard/umkm/{id}/latest</span>
+                        </div>
+                        <span class="route-desc">Ambil Skor Radar Terakhir</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Path Parameters</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">id</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>ID unik UMKM</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="detail-section">
+                            <button class="btn-try" onclick="showTester(this, '/api/dashboard/umkm/{id}/latest', 'GET', ['id'], true)">
+                                <i class="fa-solid fa-play"></i> Uji Coba Endpoint
+                            </button>
+                            <div class="api-tester">
+                                <div class="tester-inputs">
+                                    <div class="tester-input-group">
+                                        <label class="tester-label">id (UMKM ID)</label>
+                                        <input type="number" class="tester-input param-field" data-param="id" value="1">
+                                    </div>
+                                </div>
+                                <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
+                                    <span class="btn-test-text">Kirim Request</span>
+                                    <div class="spinner"></div>
+                                </button>
+                                <div class="test-result-wrapper">
+                                    <div class="result-meta">
+                                        <span>Response:</span>
+                                        <span class="status-pill"></span>
+                                    </div>
+                                    <div class="code-container">
+                                        <code class="code-block result-code"></code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 16: Historical Trend -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="route-path">/api/dashboard/umkm/{id}/trend</span>
+                        </div>
+                        <span class="route-desc">Ambil Tren Nilai Historis UMKM</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Path Parameters</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">id</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>ID unik UMKM</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="detail-section">
+                            <button class="btn-try" onclick="showTester(this, '/api/dashboard/umkm/{id}/trend', 'GET', ['id'], true)">
+                                <i class="fa-solid fa-play"></i> Uji Coba Endpoint
+                            </button>
+                            <div class="api-tester">
+                                <div class="tester-inputs">
+                                    <div class="tester-input-group">
+                                        <label class="tester-label">id (UMKM ID)</label>
+                                        <input type="number" class="tester-input param-field" data-param="id" value="1">
+                                    </div>
+                                </div>
+                                <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
+                                    <span class="btn-test-text">Kirim Request</span>
+                                    <div class="spinner"></div>
+                                </button>
+                                <div class="test-result-wrapper">
+                                    <div class="result-meta">
+                                        <span>Response:</span>
+                                        <span class="status-pill"></span>
+                                    </div>
+                                    <div class="code-container">
+                                        <code class="code-block result-code"></code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 17: Factor Breakdown -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="route-path">/api/dashboard/assessment/{id}/factors</span>
+                        </div>
+                        <span class="route-desc">Ambil Rata-rata Skor per-Faktor Asesmen</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Path Parameters</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">id</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>ID unik Sesi Asesmen</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="detail-section">
+                            <button class="btn-try" onclick="showTester(this, '/api/dashboard/assessment/{id}/factors', 'GET', ['id'], true)">
+                                <i class="fa-solid fa-play"></i> Uji Coba Endpoint
+                            </button>
+                            <div class="api-tester">
+                                <div class="tester-inputs">
+                                    <div class="tester-input-group">
+                                        <label class="tester-label">id (Assessment ID)</label>
+                                        <input type="number" class="tester-input param-field" data-param="id" value="1">
+                                    </div>
+                                </div>
+                                <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
+                                    <span class="btn-test-text">Kirim Request</span>
+                                    <div class="spinner"></div>
+                                </button>
+                                <div class="test-result-wrapper">
+                                    <div class="result-meta">
+                                        <span>Response:</span>
+                                        <span class="status-pill"></span>
+                                    </div>
+                                    <div class="code-container">
+                                        <code class="code-block result-code"></code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 18: Detailed Analysis -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="route-path">/api/dashboard/assessment/{id}/details</span>
+                        </div>
+                        <span class="route-desc">Ambil Rincian Seluruh Jawaban Kuesioner</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Path Parameters</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">id</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>ID unik Sesi Asesmen</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="detail-section">
+                            <button class="btn-try" onclick="showTester(this, '/api/dashboard/assessment/{id}/details', 'GET', ['id'], true)">
+                                <i class="fa-solid fa-play"></i> Uji Coba Endpoint
+                            </button>
+                            <div class="api-tester">
+                                <div class="tester-inputs">
+                                    <div class="tester-input-group">
+                                        <label class="tester-label">id (Assessment ID)</label>
+                                        <input type="number" class="tester-input param-field" data-param="id" value="1">
+                                    </div>
+                                </div>
+                                <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
+                                    <span class="btn-test-text">Kirim Request</span>
+                                    <div class="spinner"></div>
+                                </button>
+                                <div class="test-result-wrapper">
+                                    <div class="result-meta">
+                                        <span>Response:</span>
+                                        <span class="status-pill"></span>
+                                    </div>
+                                    <div class="code-container">
+                                        <code class="code-block result-code"></code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API 19: Outliers Boxplot -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div class="endpoint-route">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="route-path">/api/dashboard/assessment/{id}/outliers</span>
+                        </div>
+                        <span class="route-desc">Ambil Data Batas Pencilan Boxplot Statistik</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="detail-section">
+                            <div class="detail-title">Path Parameters</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Parameter</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="param-name">id</td>
+                                        <td class="param-type">integer</td>
+                                        <td><span class="param-req">Wajib</span></td>
+                                        <td>ID unik Sesi Asesmen</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="detail-section">
+                            <button class="btn-try" onclick="showTester(this, '/api/dashboard/assessment/{id}/outliers', 'GET', ['id'], true)">
+                                <i class="fa-solid fa-play"></i> Uji Coba Endpoint
+                            </button>
+                            <div class="api-tester">
+                                <div class="tester-inputs">
+                                    <div class="tester-input-group">
+                                        <label class="tester-label">id (Assessment ID)</label>
+                                        <input type="number" class="tester-input param-field" data-param="id" value="1">
+                                    </div>
+                                </div>
+                                <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
+                                    <span class="btn-test-text">Kirim Request</span>
+                                    <div class="spinner"></div>
+                                </button>
+                                <div class="test-result-wrapper">
+                                    <div class="result-meta">
+                                        <span>Response:</span>
+                                        <span class="status-pill"></span>
+                                    </div>
+                                    <div class="code-container">
+                                        <code class="code-block result-code"></code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: 5. System Admin -->
+            <section id="system">
+                <div class="section-header">
+                    <h2 class="section-title">5. System Admin API</h2>
+                    <p class="section-desc">API utilitas internal untuk inisialisasi lingkungan hosting (Artisan run migrations & seeds via HTTP).</p>
+                </div>
+
+                <!-- API 20: Run Migration -->
                 <div class="endpoint-card">
                     <div class="endpoint-header">
                         <div class="endpoint-route">
                             <span class="method-badge method-get">GET</span>
                             <span class="route-path">/run-migration</span>
                         </div>
-                        <span class="route-desc">Memicu migrasi database & impor kuesioner CSV otomatis</span>
+                        <span class="route-desc">Inisiasi Migrasi Database Awan & Impor Soal CSV</span>
                     </div>
                     <div class="endpoint-details">
                         <div class="detail-section">
-                            <div class="detail-title">Respons Sukses (200 OK)</div>
-                            <div class="code-container">
-                                <code class="code-block">{
-    "status": "success",
-    "message": "Migrasi database dan impor CSV berhasil dilakukan!",
-    "migrate_output": "Migration table created successfully...",
-    "import_output": "CSV Question data seeded successfully..."
-}</code>
+                            <button class="btn-try" onclick="showTester(this, '/run-migration', 'GET', [])">
+                                <i class="fa-solid fa-play"></i> Uji Coba Endpoint
+                            </button>
+                            <div class="api-tester">
+                                <div class="tester-inputs"></div>
+                                <button class="btn-try" style="background:#6366f1; color:#fff;" onclick="executeTest(this)">
+                                    <span class="btn-test-text">Kirim Request</span>
+                                    <div class="spinner"></div>
+                                </button>
+                                <div class="test-result-wrapper">
+                                    <div class="result-meta">
+                                        <span>Response:</span>
+                                        <span class="status-pill"></span>
+                                    </div>
+                                    <div class="code-container">
+                                        <code class="code-block result-code"></code>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -919,7 +1533,6 @@
             let current = "";
             sections.forEach((section) => {
                 const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
                 if (pageYOffset >= sectionTop - 120) {
                     current = section.getAttribute("id");
                 }
