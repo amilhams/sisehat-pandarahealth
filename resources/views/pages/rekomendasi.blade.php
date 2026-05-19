@@ -176,7 +176,7 @@
             elseif ($overallCat == 'CUKUP_SEHAT') $dotColor = '#facc15';
             elseif ($overallCat == 'KURANG_SEHAT') $dotColor = '#f87171';
         @endphp
-        <span class="badge-status-dot" style="background: {{ $dotColor }}"></span> Status: {{ str_replace('_', ' ', strtoupper($health_score->category ?? 'N/A')) }}
+        <span id="badge-status-dot" class="badge-status-dot" style="background: {{ $dotColor }}"></span> <span id="badge-status-text">Status: {{ str_replace('_', ' ', strtoupper($overallCat ?: 'N/A')) }}</span>
     </div>
 </div>
 
@@ -196,7 +196,7 @@
         <div class="gauge-canvas-wrap">
             <canvas id="gaugeChart" style="width:220px; height:130px;"></canvas>
             <div class="gauge-center-text">
-                <div class="gauge-pct">{{ number_format($health_score->overall_score ?? 0, 0) }}<span>%</span></div>
+                <div class="gauge-pct"><span id="gauge-pct-val">{{ number_format($health_score->overall_score ?? 0, 0) }}</span><span>%</span></div>
                 <div class="gauge-label">SKOR AKTIF</div>
             </div>
         </div>
@@ -216,7 +216,7 @@
                     elseif ($cat == 'CUKUP_SEHAT') $catColor = '#facc15';
                     elseif ($cat == 'KURANG_SEHAT') $catColor = '#f87171';
                 @endphp
-                <div class="gauge-stat-val" style="color: {{ $catColor }};">
+                <div id="current-status-val" class="gauge-stat-val" style="color: {{ $catColor }};">
                     {{ str_replace('_', ' ', strtoupper($health_score->category ?? 'N/A')) }}
                 </div>
             </div>
@@ -233,6 +233,7 @@
             <span class="prio-header-title">Prioritas Perbaikan</span>
         </div>
 
+        <div id="priority-cards-container">
         @foreach($recommendations as $rec)
             @php
                 // Map category level to priority styling
@@ -280,6 +281,7 @@
                 @endif
             </div>
         @endforeach
+        </div>
     </div>
 </div>
 
@@ -287,32 +289,135 @@
 
 @section('scripts')
 <script>
-const healthScore = {{ number_format($health_score->overall_score ?? 0, 0) }};
-let gaugeColor = '#f87171';
-if (healthScore > 75) gaugeColor = '#4ade80';
-else if (healthScore > 50) gaugeColor = '#818cf8';
-else if (healthScore > 25) gaugeColor = '#facc15';
+    const healthScore = {{ number_format($health_score->overall_score ?? 0, 0) }};
+    let gaugeColor = '#f87171';
+    if (healthScore > 75) gaugeColor = '#4ade80';
+    else if (healthScore > 50) gaugeColor = '#818cf8';
+    else if (healthScore > 25) gaugeColor = '#facc15';
 
-// Half-donut gauge chart
-const gaugeCtx = document.getElementById('gaugeChart').getContext('2d');
-new Chart(gaugeCtx, {
-    type: 'doughnut',
-    data: {
-        datasets: [{
-            data: [healthScore, 100 - healthScore],
-            backgroundColor: [gaugeColor, '#222'],
-            borderWidth: 0,
-            borderRadius: 10,
-            circumference: 180,
-            rotation: 270
-        }]
-    },
-    options: {
-        responsive: false,
-        maintainAspectRatio: false,
-        cutout: '80%',
-        plugins: { legend: { display: false }, tooltip: { enabled: false } }
+    // Half-donut gauge chart
+    const gaugeCtx = document.getElementById('gaugeChart').getContext('2d');
+    window.gaugeChart = new Chart(gaugeCtx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [healthScore, 100 - healthScore],
+                backgroundColor: [gaugeColor, '#222'],
+                borderWidth: 0,
+                borderRadius: 10,
+                circumference: 180,
+                rotation: 270
+            }]
+        },
+        options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            cutout: '80%',
+            plugins: { legend: { display: false }, tooltip: { enabled: false } }
+        }
+    });
+
+    function startRekomendasiPoller() {
+        setInterval(() => {
+            fetch('{{ route('api.realtime.rekomendasi') }}?umkm_id={{ $selected_umkm_id }}&assessment_id={{ $selected_assessment_id }}')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) return;
+
+                    // 1. Update stats & badge
+                    if (data.health_score) {
+                        const score = Math.round(data.health_score.overall_score);
+                        document.getElementById('gauge-pct-val').innerText = score;
+                        
+                        let catColor = '#fff';
+                        let dotColor = '#fff';
+                        const catClean = data.health_score.category.replace('_', ' ').toUpperCase();
+                        if (score > 75) { catColor = '#4ade80'; dotColor = '#4ade80'; }
+                        else if (score > 50) { catColor = '#818cf8'; dotColor = '#818cf8'; }
+                        else if (score > 25) { catColor = '#facc15'; dotColor = '#facc15'; }
+                        else { catColor = '#f87171'; dotColor = '#f87171'; }
+
+                        const badgeText = document.getElementById('badge-status-text');
+                        if (badgeText) badgeText.innerText = 'Status: ' + catClean;
+                        
+                        const badgeDot = document.getElementById('badge-status-dot');
+                        if (badgeDot) badgeDot.style.backgroundColor = dotColor;
+
+                        const currStatusVal = document.getElementById('current-status-val');
+                        if (currStatusVal) {
+                            currStatusVal.style.color = catColor;
+                            currStatusVal.innerText = catClean;
+                        }
+
+                        // 2. Update Gauge chart
+                        if (window.gaugeChart) {
+                            window.gaugeChart.data.datasets[0].data = [score, 100 - score];
+                            window.gaugeChart.data.datasets[0].backgroundColor = [catColor, '#222'];
+                            window.gaugeChart.update();
+                        }
+                    }
+
+                    // 3. Update Priority Cards
+                    if (data.recommendations && data.radar_chart) {
+                        let prioCardsHtml = '';
+                        data.recommendations.forEach(rec => {
+                            let level = rec.category_level.toLowerCase();
+                            let prioClass = 'low';
+                            let prioText = 'RENDAH';
+                            let icon = 'fa-square-check';
+
+                            if (level === 'kurang_sehat') {
+                                prioClass = 'high';
+                                prioText = 'KRITIS';
+                                icon = 'fa-triangle-exclamation';
+                            } else if (level === 'cukup_sehat') {
+                                prioClass = 'warn';
+                                prioText = 'WASPADA';
+                                icon = 'fa-circle-exclamation';
+                            } else if (level === 'sehat') {
+                                prioClass = 'med';
+                                prioText = 'SEHAT';
+                                icon = 'fa-circle-info';
+                            } else if (level === 'sangat_sehat') {
+                                prioClass = 'low';
+                                prioText = 'SANGAT SEHAT';
+                                icon = 'fa-circle-check';
+                            }
+
+                            // find factor name
+                            const factorObj = data.radar_chart.find(f => f.id == rec.factor_id);
+                            const factorName = factorObj ? factorObj.factor : ('Faktor ' + rec.factor_id);
+
+                            const actionBtnHtml = rec.suggested_action ? `
+                                <div class="prio-actions">
+                                    <button class="prio-btn"><i class="fa-solid fa-bolt"></i> ${rec.suggested_action}</button>
+                                </div>` : '';
+
+                            prioCardsHtml += `
+                                <div class="prio-card ${prioClass}">
+                                    <div class="prio-card-top">
+                                        <div class="prio-card-left">
+                                            <div class="prio-icon-wrap">
+                                                <i class="fa-solid ${icon}"></i>
+                                            </div>
+                                            <div class="prio-name">${factorName}</div>
+                                        </div>
+                                        <span class="prio-badge ${prioClass}">${prioText}</span>
+                                    </div>
+                                    <p class="prio-desc">${rec.recommendation_text}</p>
+                                    ${actionBtnHtml}
+                                </div>`;
+                        });
+                        const container = document.getElementById('priority-cards-container');
+                        if (container) {
+                            container.innerHTML = prioCardsHtml;
+                        }
+                    }
+                })
+                .catch(err => console.error('Poller error:', err));
+        }, 10000);
     }
-});
+
+    document.addEventListener('DOMContentLoaded', startRekomendasiPoller);
 </script>
 @endsection

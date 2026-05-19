@@ -981,4 +981,321 @@ class DashboardController extends Controller
             return $data[$low] + $fraction * ($data[$high] - $data[$low]);
         }
     }
+
+    public function apiRealtimeDashboard(Request $request)
+    {
+        $data = $this->getActiveData($request);
+        
+        $myAvgHealth = 0;
+        $myHealthCategory = 'N/A';
+        $myFactors = collect();
+        
+        if ($data['assessment_with_score']) {
+            $assessmentId = $data['assessment_with_score']->assessment_id;
+            $hs = HealthScore::where('assessment_id', $assessmentId)->first();
+
+            $myAvgHealth = $hs ? round($hs->overall_score, 1) : 0;
+            $myHealthCategory = $hs ? $hs->category : 'PENDING';
+            
+            $myFactors = $hs ? DB::table('factor_scores as fs')
+                ->join('factors as f', 'fs.factor_id', '=', 'f.factor_id')
+                ->where('fs.health_score_id', $hs->health_score_id)
+                ->select('f.nama_factor', 'fs.score as avg_score')
+                ->get() : collect();
+        }
+
+        $totalUmkm = Umkm::count();
+        $totalEmployees = DB::table('responses')
+            ->where('respondent_type', 'employee')
+            ->distinct('employee_code')
+            ->count('employee_code');
+
+        $totalOwners = DB::table('responses')
+            ->join('assessments', 'responses.assessment_id', '=', 'assessments.assessment_id')
+            ->join('umkms', 'assessments.umkm_id', '=', 'umkms.umkm_id')
+            ->where('responses.respondent_type', 'owner')
+            ->distinct('umkms.owner_id')
+            ->count('umkms.owner_id');
+
+        $totalRespondents = $totalEmployees + $totalOwners;
+        
+        $healthScores = HealthScore::all();
+        $avgHealth = $healthScores->avg('overall_score') ?? 0;
+        
+        $sehatCount = $healthScores->where('overall_score', '>=', 60)->count();
+        $kritisCount = $healthScores->where('overall_score', '<', 60)->count();
+
+        $bizTypes = Umkm::select('sektor_usaha', DB::raw('count(*) as count'))
+            ->groupBy('sektor_usaha')
+            ->pluck('count', 'sektor_usaha');
+
+        $genderDist = Owner::select('gender', DB::raw('count(*) as count'))
+            ->groupBy('gender')
+            ->pluck('count', 'gender');
+
+        $topUmkms = DB::table('health_scores as hs')
+            ->join('assessments as a', 'hs.assessment_id', '=', 'a.assessment_id')
+            ->join('umkms as u', 'a.umkm_id', '=', 'u.umkm_id')
+            ->select('u.nama_umkm', 'u.sektor_usaha', 'hs.overall_score', 'hs.category as health_category')
+            ->orderByDesc('hs.overall_score')
+            ->limit(5)
+            ->get();
+
+        $ageDist = Umkm::select('umur_usaha', DB::raw('count(*) as count'))
+            ->groupBy('umur_usaha')
+            ->pluck('count', 'umur_usaha');
+
+        return response()->json([
+            'stats' => [
+                'total_umkm' => $totalUmkm,
+                'total_respondents' => $totalRespondents,
+                'avg_health' => round($avgHealth, 1),
+                'sehat_count' => $sehatCount,
+                'kritis_count' => $kritisCount,
+            ],
+            'biz_types' => $bizTypes,
+            'age_dist' => $ageDist,
+            'gender_dist' => $genderDist,
+            'top_umkms' => $topUmkms,
+            'has_umkm' => $data['has_umkm'],
+            'has_assessment' => $data['has_assessment'],
+            'my_avg_health' => round($myAvgHealth, 1),
+            'my_health_category' => $myHealthCategory,
+            'my_factors' => $myFactors,
+            'selected_umkm_id' => $data['selected_umkm_id'],
+        ]);
+    }
+
+    public function apiRealtimeAssessment(Request $request)
+    {
+        $owner = \Illuminate\Support\Facades\Auth::guard('owner')->user();
+        $umkms = $owner ? $owner->umkms : collect();
+        
+        $result = [];
+        foreach ($umkms as $umkm) {
+            $activeAssessment = \App\Models\Assessment::where('umkm_id', $umkm->umkm_id)
+                ->whereIn('status', ['draft', 'open'])
+                ->latest()
+                ->first();
+
+            if (!$activeAssessment) {
+                $activeAssessment = \App\Models\Assessment::where('umkm_id', $umkm->umkm_id)
+                    ->where('status', 'completed')
+                    ->latest()
+                    ->first();
+            }
+
+            $status = 'belum_mulai';
+            $progress = 0;
+            $assessmentId = null;
+            $employeeAnswered = 0;
+            $employeeTarget = 0;
+
+            if ($activeAssessment) {
+                $assessmentId = $activeAssessment->assessment_id;
+                $employeeTarget = $activeAssessment->jumlah_karyawan ?? 0;
+                
+                $totalQuestions = \App\Models\Question::where('question_role', 'owner')->count();
+                $answeredQuestions = \Illuminate\Support\Facades\DB::table('responses')
+                    ->where('assessment_id', $assessmentId)
+                    ->where('respondent_type', 'owner')
+                    ->count();
+
+                $employeeAnswered = \Illuminate\Support\Facades\DB::table('responses')
+                    ->where('assessment_id', $assessmentId)
+                    ->where('respondent_type', 'employee')
+                    ->distinct('employee_code')
+                    ->count('employee_code');
+
+                if ($activeAssessment->status == 'draft') {
+                    $status = $answeredQuestions > 0 ? 'sedang_berlangsung' : 'belum_mulai';
+                    $progress = $totalQuestions > 0 ? round(($answeredQuestions / $totalQuestions) * 100) : 0;
+                } elseif ($activeAssessment->status == 'open') {
+                    if ($employeeAnswered == 0) {
+                        $status = 'menunggu_karyawan';
+                    } elseif ($employeeAnswered < $employeeTarget) {
+                        $status = 'proses_karyawan';
+                    } else {
+                       $status = 'selesai_karyawan';
+                    }
+                    $progress = 100;
+                } elseif ($activeAssessment->status == 'completed' || $activeAssessment->status == 'closed') {
+                    $status = 'selesai';
+                    $progress = 100;
+                }
+            }
+
+            $result[] = [
+                'umkm_id' => $umkm->umkm_id,
+                'nama_umkm' => $umkm->nama_umkm,
+                'sektor_usaha' => $umkm->sektor_usaha ?? 'Sektor Umum',
+                'active_assessment_id' => $assessmentId,
+                'assessment_status' => $status,
+                'assessment_progress' => $progress,
+                'employee_answered' => $employeeAnswered,
+                'employee_target' => $employeeTarget
+            ];
+        }
+
+        return response()->json([
+            'umkms' => $result
+        ]);
+    }
+
+    public function apiRealtimeProfilFaktor(Request $request)
+    {
+        $data = $this->getActiveData($request);
+        $requestedAssessmentId = $request->query('assessment_id');
+        $assessment = null;
+        if ($requestedAssessmentId) {
+            $assessment = Assessment::where('umkm_id', $data['selected_umkm_id'])->find($requestedAssessmentId);
+        }
+        if (!$assessment) {
+            $assessment = $data['assessment_with_score'];
+        }
+        if (!$assessment) {
+            return response()->json(['error' => 'Belum ada data assessment.'], 404);
+        }
+        
+        $detailedData = $this->getDetailedData($assessment->assessment_id);
+        
+        $factors = DB::table('factors')->get();
+        $outlierResults = [];
+        foreach ($factors as $factor) {
+            $responses = DB::table('responses as r')
+                ->join('questions as q', 'r.question_id', '=', 'q.question_id')
+                ->where('r.assessment_id', $assessment->assessment_id)
+                ->where('q.factor_id', $factor->factor_id)
+                ->select('r.answer_value', 'q.max_score')
+                ->get();
+
+            $normalizedScores = [];
+            foreach ($responses as $resp) {
+                $max = $resp->max_score ?? 5;
+                $normalizedScores[] = ($resp->answer_value / $max) * 100;
+            }
+
+            if (count($normalizedScores) > 0) {
+                sort($normalizedScores);
+                $outlierResults[] = [
+                    'nama_factor' => $factor->nama_factor,
+                    'code' => $factor->nama_factor,
+                    'stats' => $this->calculateBoxplot($normalizedScores)
+                ];
+            }
+        }
+
+        return response()->json([
+            'health_score' => $detailedData['health_score'] ?? null,
+            'radar_chart' => $detailedData['radar_chart'] ?? [],
+            'rankings' => $detailedData['rankings'] ?? ['all' => []],
+            'highlights' => $detailedData['highlights'] ?? ['highest' => null, 'lowest' => null],
+            'recommendations' => $detailedData['recommendations'] ?? [],
+            'outliers' => $outlierResults,
+            'selected_assessment_id' => $assessment->assessment_id
+        ]);
+    }
+
+    public function apiRealtimeComparison(Request $request)
+    {
+        $data = $this->getActiveData($request);
+        $requestedAssessmentId = $request->query('assessment_id');
+        $assessment = null;
+        if ($requestedAssessmentId) {
+            $assessment = \App\Models\Assessment::where('umkm_id', $data['selected_umkm_id'])->find($requestedAssessmentId);
+        }
+        if (!$assessment) {
+            $assessment = $data['assessment_with_score'];
+        }
+        if (!$assessment) {
+            return response()->json(['error' => 'Belum ada data assessment.'], 404);
+        }
+
+        $detailedData = $this->getDetailedData($assessment->assessment_id);
+
+        return response()->json([
+            'health_score' => $detailedData['health_score'] ?? null,
+            'radar_chart' => $detailedData['radar_chart'] ?? [],
+            'industry_benchmark' => $detailedData['industry_benchmark'] ?? ['peer_count' => 0, 'sektor_usaha' => 'N/A'],
+            'previous_assessment_info' => $detailedData['previous_assessment_info'] ?? null,
+            'selected_assessment_id' => $assessment->assessment_id
+        ]);
+    }
+
+    public function apiRealtimeRekomendasi(Request $request)
+    {
+        $data = $this->getActiveData($request);
+        $requestedAssessmentId = $request->query('assessment_id');
+        $assessment = null;
+        if ($requestedAssessmentId) {
+            $assessment = \App\Models\Assessment::where('umkm_id', $data['selected_umkm_id'])->find($requestedAssessmentId);
+        }
+        if (!$assessment) {
+            $assessment = $data['assessment_with_score'];
+        }
+        if (!$assessment) {
+            return response()->json(['error' => 'Belum ada data assessment.'], 404);
+        }
+
+        $detailedData = $this->getDetailedData($assessment->assessment_id);
+
+        return response()->json([
+            'health_score' => $detailedData['health_score'] ?? null,
+            'recommendations' => $detailedData['recommendations'] ?? [],
+            'radar_chart' => $detailedData['radar_chart'] ?? [],
+            'selected_assessment_id' => $assessment->assessment_id
+        ]);
+    }
+
+    public function apiRealtimeMonitoring(Request $request)
+    {
+        $data = $this->getActiveData($request);
+        $assessment = $data['assessment_with_score'];
+        if (!$assessment) {
+            return response()->json(['error' => 'Belum ada data assessment.'], 404);
+        }
+
+        $id = $assessment->assessment_id;
+        $totalEmployees = \App\Models\Response::where('assessment_id', $id)
+            ->where('respondent_type', 'employee')
+            ->distinct('employee_code')
+            ->count('employee_code');
+
+        $hasOwner = \App\Models\Response::where('assessment_id', $id)
+            ->where('respondent_type', 'owner')
+            ->exists() ? 1 : 0;
+
+        $totalRespondents = $totalEmployees + $hasOwner;
+        $targetRespondents = ($assessment->jumlah_karyawan ?? 0) + 1;
+        if ($targetRespondents <= 0) $targetRespondents = 1;
+
+        $completionRate = min(round(($totalRespondents / $targetRespondents) * 100), 100);
+
+        $healthService = app(\App\Services\HealthService::class);
+        $estimatedScoreData = $healthService->calculate($id);
+
+        $recentActivity = \App\Models\Response::where('assessment_id', $id)
+            ->where('respondent_type', 'employee')
+            ->select('employee_code', DB::raw('MAX(created_at) as last_active'))
+            ->groupBy('employee_code')
+            ->orderBy('last_active', 'desc')
+            ->limit(3)
+            ->get()
+            ->map(function ($act) {
+                return [
+                    'employee_code' => $act->employee_code,
+                    'last_active' => \Carbon\Carbon::parse($act->last_active)->diffForHumans()
+                ];
+            });
+
+        return response()->json([
+            'total_respondents' => $totalRespondents,
+            'target_respondents' => $targetRespondents,
+            'completion_rate' => $completionRate,
+            'estimated_score' => round($estimatedScoreData->overall_score ?? 0, 1),
+            'estimated_category' => $estimatedScoreData->category ?? 'N/A',
+            'recent_activity' => $recentActivity,
+            'selected_assessment_id' => $id
+        ]);
+    }
 }

@@ -71,7 +71,7 @@
         <p class="hub-subtitle">Pilih UMKM Anda dan mulai lakukan evaluasi kesehatan organisasi.</p>
     </div>
 
-    <div class="status-grid">
+    <div class="status-grid" id="assessment-grid">
         @forelse($umkms as $umkm)
             <div class="status-card">
                 <div class="card-top">
@@ -264,5 +264,126 @@
             manageLinks(activeUmkmId, document.getElementById('modalUmkmName').innerText);
         }
     }
+
+    function startAssessmentPoller() {
+        setInterval(() => {
+            fetch('{{ route('api.realtime.assessment') }}')
+                .then(res => res.json())
+                .then(data => {
+                    let gridHtml = '';
+                    if (data.umkms && data.umkms.length > 0) {
+                        data.umkms.forEach(umkm => {
+                            let badgeHtml = '';
+                            if (umkm.assessment_status === 'selesai') {
+                                badgeHtml = '<span class="badge-pill badge-done">Selesai</span>';
+                            } else if (umkm.assessment_status === 'selesai_karyawan') {
+                                badgeHtml = '<span class="badge-pill badge-done" style="background: #4ade80; color: #000;">Kuota Terpenuhi</span>';
+                            } else if (umkm.assessment_status === 'proses_karyawan') {
+                                badgeHtml = `<span class="badge-pill badge-doing">Berlangsung (${umkm.employee_answered}/${umkm.employee_target})</span>`;
+                            } else if (umkm.assessment_status === 'menunggu_karyawan') {
+                                badgeHtml = '<span class="badge-pill badge-doing">Tunggu Karyawan</span>';
+                            } else if (umkm.assessment_status === 'sedang_berlangsung') {
+                                badgeHtml = '<span class="badge-pill badge-doing">Proses Owner</span>';
+                            } else {
+                                badgeHtml = '<span class="badge-pill badge-yet">Belum Mulai</span>';
+                            }
+
+                            let progressHtml = '';
+                            if (umkm.assessment_status === 'sedang_berlangsung' || umkm.assessment_status === 'belum_mulai') {
+                                progressHtml = `
+                                    <div class="progress-label">
+                                        <span>Progres Owner</span>
+                                        <span>${umkm.assessment_progress}%</span>
+                                    </div>
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: ${umkm.assessment_progress}%"></div>
+                                    </div>`;
+                            } else {
+                                const empPct = umkm.employee_target > 0 ? Math.round((umkm.employee_answered / umkm.employee_target) * 100) : 0;
+                                progressHtml = `
+                                    <div class="progress-label">
+                                        <span>Progres Karyawan</span>
+                                        <span>${empPct}% (${umkm.employee_answered}/${umkm.employee_target})</span>
+                                    </div>
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: ${empPct}%; background: #818cf8;"></div>
+                                    </div>`;
+                            }
+
+                            let actionButtonsHtml = '';
+                            if (umkm.assessment_status === 'selesai' || umkm.assessment_status === 'selesai_karyawan' || umkm.assessment_status === 'proses_karyawan' || umkm.assessment_status === 'menunggu_karyawan') {
+                                const btnText = umkm.assessment_status === 'selesai' ? 'Lihat Hasil' : 'Monitoring';
+                                actionButtonsHtml = `
+                                    <a href="{{ route('monitoring') }}?umkm_id=${umkm.umkm_id}" class="btn-action btn-fill" style="text-decoration: none; flex: 2;">
+                                        <i class="fa-solid fa-chart-line"></i> 
+                                        ${btnText}
+                                    </a>`;
+                            } else {
+                                if (umkm.assessment_status === 'belum_mulai' && !umkm.active_assessment_id) {
+                                    actionButtonsHtml = `
+                                        <button type="button" class="btn-action btn-fill" style="flex: 2;"
+                                                onclick="openNewPeriodModal('${umkm.umkm_id}', '${umkm.nama_umkm.replace(/'/g, "\\'")}', true)">
+                                            <i class="fa-solid fa-play"></i> Mulai Asesmen
+                                        </button>`;
+                                } else {
+                                    const fillUrl = "{{ route('assessment.fill', ':id') }}".replace(':id', umkm.umkm_id);
+                                    const btnText = umkm.assessment_status === 'belum_mulai' ? 'Mulai Asesmen' : 'Lanjut Mengisi';
+                                    actionButtonsHtml = `
+                                        <a href="${fillUrl}" class="btn-action btn-fill" style="text-decoration: none; flex: 2;">
+                                            <i class="fa-solid fa-pen-to-square"></i> 
+                                            ${btnText}
+                                        </a>`;
+                                }
+                            }
+
+                            const linkBtnDisabledAttr = umkm.assessment_status === 'belum_mulai' ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : '';
+
+                            gridHtml += `
+                                <div class="status-card">
+                                    <div class="card-top">
+                                        <div>
+                                            <div class="umkm-sector">${umkm.sektor_usaha || 'Sektor Umum'}</div>
+                                            <h3 class="umkm-name">${umkm.nama_umkm}</h3>
+                                        </div>
+                                        ${badgeHtml}
+                                    </div>
+
+                                    <div class="progress-wrap">
+                                        ${progressHtml}
+                                    </div>
+
+                                    <div class="card-actions" style="display: flex; flex-direction: column; gap: 10px;">
+                                        <div style="display: flex; gap: 10px; width: 100%;">
+                                            ${actionButtonsHtml}
+                                            <button class="btn-action btn-link" onclick="manageLinks('${umkm.umkm_id}', '${umkm.nama_umkm.replace(/'/g, "\\'")}')" 
+                                                    style="flex: 1;"
+                                                    ${linkBtnDisabledAttr}>
+                                                <i class="fa-solid fa-link"></i>
+                                            </button>
+                                        </div>
+
+                                        <button type="button" class="btn-action btn-link" style="width: 100%; border-style: dashed; border-color: #333; color: #888;" 
+                                                onclick="openNewPeriodModal('${umkm.umkm_id}', '${umkm.nama_umkm.replace(/'/g, "\\'")}')">
+                                            <i class="fa-solid fa-plus-circle"></i> Buat Periode Baru
+                                        </button>
+                                    </div>
+                                </div>`;
+                        });
+                    } else {
+                        gridHtml = `
+                            <div class="empty-card">
+                                <i class="fa-solid fa-store-slash" style="font-size: 40px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                <h3 style="color: #fff; margin-bottom: 8px;">Belum Ada UMKM</h3>
+                                <p style="margin-bottom: 24px;">Daftarkan UMKM Anda terlebih dahulu untuk memulai asesmen.</p>
+                                <a href="{{ route('tambah-umkm') }}" class="btn-fill btn-action" style="max-width: 200px; margin: 0 auto; text-decoration: none;">Daftar Sekarang</a>
+                            </div>`;
+                    }
+                    document.getElementById('assessment-grid').innerHTML = gridHtml;
+                })
+                .catch(err => console.error('Poller error:', err));
+        }, 10000);
+    }
+
+    document.addEventListener('DOMContentLoaded', startAssessmentPoller);
 </script>
 @endsection

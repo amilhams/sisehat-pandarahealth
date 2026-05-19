@@ -26,6 +26,16 @@ Route::middleware(['auth:owner'])->group(function () {
     Route::get('/umkm-rank', [DashboardController::class, 'webUmkmRank'])->name('umkm-rank');
     Route::get('/api/umkm/rank', [DashboardController::class, 'apiUmkmRank'])->name('api.umkm.rank');
     
+    // API Polling Realtime Baru (mengembalikan JSON)
+    Route::prefix('api/realtime')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'apiRealtimeDashboard'])->name('api.realtime.dashboard');
+        Route::get('/assessment', [DashboardController::class, 'apiRealtimeAssessment'])->name('api.realtime.assessment');
+        Route::get('/profil-faktor', [DashboardController::class, 'apiRealtimeProfilFaktor'])->name('api.realtime.profil-faktor');
+        Route::get('/comparison', [DashboardController::class, 'apiRealtimeComparison'])->name('api.realtime.comparison');
+        Route::get('/rekomendasi', [DashboardController::class, 'apiRealtimeRekomendasi'])->name('api.realtime.rekomendasi');
+        Route::get('/monitoring', [DashboardController::class, 'apiRealtimeMonitoring'])->name('api.realtime.monitoring');
+    });
+    
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/profile/name', [ProfileController::class, 'showChangeName'])->name('profile.name');

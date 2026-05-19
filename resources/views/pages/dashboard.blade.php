@@ -164,7 +164,7 @@
         </div>
         <div class="stat-bottom">
             <span class="stat-label-txt">Total UMKM Terdaftar</span>
-            <span class="stat-val">{{ number_format($stats['total_umkm']) }}</span>
+            <span class="stat-val" id="stat-total-umkm">{{ number_format($stats['total_umkm']) }}</span>
         </div>
     </div>
     <div class="stat-card2">
@@ -173,7 +173,7 @@
         </div>
         <div class="stat-bottom">
             <span class="stat-label-txt">Total Responden</span>
-            <span class="stat-val">{{ number_format($stats['total_respondents']) }}</span>
+            <span class="stat-val" id="stat-total-respondents">{{ number_format($stats['total_respondents']) }}</span>
         </div>
     </div>
     <div class="stat-card2">
@@ -182,7 +182,7 @@
         </div>
         <div class="stat-bottom">
             <span class="stat-label-txt">Kesehatan Rata-rata</span>
-            <span class="stat-val">{{ $stats['avg_health'] }} <small>/ 100</small></span>
+            <span class="stat-val" id="stat-avg-health">{{ $stats['avg_health'] }} <small>/ 100</small></span>
         </div>
     </div>
     <div class="stat-card2">
@@ -192,7 +192,7 @@
         </div>
         <div class="stat-bottom">
             <span class="stat-label-txt">UMKM Sehat</span>
-            <span class="stat-val">{{ number_format($stats['sehat_count']) }}</span>
+            <span class="stat-val" id="stat-sehat-count">{{ number_format($stats['sehat_count']) }}</span>
         </div>
     </div>
     <div class="stat-card2">
@@ -202,7 +202,7 @@
         </div>
         <div class="stat-bottom">
             <span class="stat-label-txt">UMKM Krisis</span>
-            <span class="stat-val">{{ number_format($stats['kritis_count']) }}</span>
+            <span class="stat-val" id="stat-kritis-count">{{ number_format($stats['kritis_count']) }}</span>
         </div>
     </div>
 </div>
@@ -231,7 +231,7 @@
                 </div>
             </div>
             
-            <ul style="list-style:none; font-size:13px; display:flex; flex-direction:column; justify-content:center; gap:14px; flex:1;">
+            <ul id="biz-type-legend" style="list-style:none; font-size:13px; display:flex; flex-direction:column; justify-content:center; gap:14px; flex:1;">
                 @forelse($biz_types as $label => $count)
                     @php 
                         $color = $colors[$i % count($colors)];
@@ -282,6 +282,7 @@
             @endif
         </div>
 
+        <div id="health-card-body" style="display:flex; flex-direction:column; flex:1;">
         @if(!$has_umkm)
             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height: 100%; text-align: center; padding: 40px 0;">
                 <i class="fa-solid fa-store-slash" style="font-size: 40px; color: var(--text-secondary); margin-bottom: 16px;"></i>
@@ -329,6 +330,7 @@
                 @endforeach
             </div>
         @endif
+        </div>
     </div>
 </div>
 
@@ -349,7 +351,7 @@
     <div class="card2" style="display: flex; flex-direction: column;">
         <div class="card2-title">Distribusi Gender Pemilik UMKM</div>
         <div style="display:flex; align-items:center; gap:24px; flex: 1;">
-            <ul style="list-style:none; font-size:12px; display:flex; flex-direction:column; justify-content:center; gap:12px; flex:1;">
+            <ul id="gender-legend" style="list-style:none; font-size:12px; display:flex; flex-direction:column; justify-content:center; gap:12px; flex:1;">
                 @php
                     $totalOwners = $gender_dist->sum();
                     $genderColors = ['laki-laki' => '#fff', 'perempuan' => '#a3a3a3', 'lainnya' => '#444'];
@@ -386,7 +388,7 @@
                     <th>Rank</th><th>Nama UMKM</th><th>Sektor Bisnis</th><th>Status</th><th style="text-align:right;">Skor Total</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="rank-table-body">
                 @foreach($top_umkms as $idx => $top)
                 <tr>
                     <td><div class="rank-num">{{ $idx + 1 }}</div></td>
@@ -441,7 +443,7 @@ const bizCounts = Object.values(bizData);
 
 const bizColors = ['#ffffff', '#a3a3a3', '#555555', '#222222', '#888888'];
 
-new Chart(document.getElementById('bizTypeChart'), {
+window.bizTypeChart = new Chart(document.getElementById('bizTypeChart'), {
     type: 'doughnut',
     data: {
         labels: bizLabels.length ? bizLabels : ['Tidak Diketahui'],
@@ -472,7 +474,7 @@ const ageData = @json($age_dist);
 const ageLabels = ['< 1 tahun', '1 - 3 tahun', '> 3 tahun'];
 const ageValues = ageLabels.map(label => ageData[label] || 0);
 
-new Chart(document.getElementById('companyAgeChart'), {
+window.companyAgeChart = new Chart(document.getElementById('companyAgeChart'), {
     type: 'bar',
     data: {
         labels: ageLabels,
@@ -504,7 +506,7 @@ if (avgHealth > 75) gaugeHealthColor = '#4ade80';
 else if (avgHealth > 50) gaugeHealthColor = '#818cf8';
 else if (avgHealth > 25) gaugeHealthColor = '#facc15';
 // Health Gauge
-new Chart(document.getElementById('healthGauge'), {
+window.healthGauge = new Chart(document.getElementById('healthGauge'), {
     type: 'doughnut',
     data: {
         datasets: [{
@@ -526,7 +528,7 @@ const gLabels = Object.keys(gData).map(l => l.charAt(0).toUpperCase() + l.slice(
 const gValues = Object.values(gData);
 const gColors = Object.keys(gData).map(l => l === 'laki-laki' ? '#ffffff' : (l === 'perempuan' ? '#a3a3a3' : '#444444'));
 
-new Chart(document.getElementById('genderChart'), {
+window.genderChart = new Chart(document.getElementById('genderChart'), {
     type: 'doughnut',
     data: {
         labels: gLabels,
@@ -553,6 +555,246 @@ new Chart(document.getElementById('genderChart'), {
         },
         maintainAspectRatio: false
     }
+});
+
+// Start Real-Time Poller
+function startDashboardPoller() {
+    setInterval(() => {
+        fetch('{{ route('api.realtime.dashboard') }}?umkm_id={{ $selected_umkm_id }}')
+            .then(res => res.json())
+            .then(data => {
+                // 1. Update stats
+                document.getElementById('stat-total-umkm').innerText = parseInt(data.stats.total_umkm).toLocaleString();
+                document.getElementById('stat-total-respondents').innerText = parseInt(data.stats.total_respondents).toLocaleString();
+                document.getElementById('stat-avg-health').innerHTML = parseFloat(data.stats.avg_health).toFixed(1) + ' <small>/ 100</small>';
+                document.getElementById('stat-sehat-count').innerText = parseInt(data.stats.sehat_count).toLocaleString();
+                document.getElementById('stat-kritis-count').innerText = parseInt(data.stats.kritis_count).toLocaleString();
+
+                // 2. Update Biz Types Chart & Legend
+                const bizLabels = Object.keys(data.biz_types);
+                const bizCounts = Object.values(data.biz_types);
+                const bizColors = ['#ffffff', '#a3a3a3', '#555555', '#222222', '#888888'];
+                if (window.bizTypeChart) {
+                    window.bizTypeChart.data.labels = bizLabels.length ? bizLabels : ['Tidak Diketahui'];
+                    window.bizTypeChart.data.datasets[0].data = bizCounts.length ? bizCounts : [1];
+                    window.bizTypeChart.update();
+                }
+                
+                // Update Donut Center
+                const dcVal = document.querySelector('.donut-center-label div');
+                if (dcVal) {
+                    dcVal.innerText = bizCounts.reduce((a, b) => a + b, 0);
+                }
+                
+                let bizLegendHtml = '';
+                bizLabels.forEach((label, idx) => {
+                    const color = bizColors[idx % bizColors.length];
+                    const count = bizCounts[idx];
+                    bizLegendHtml += `
+                        <li style="display:flex; align-items:center; gap:12px;">
+                            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${color}; flex-shrink:0;"></span>
+                            <span style="color:var(--text-primary); font-weight:500;">
+                                ${label || 'Lainnya'} 
+                                <span style="color:var(--text-secondary); font-size:12px; font-weight:400; margin-left:4px;">(${count} UMKM)</span>
+                            </span>
+                        </li>`;
+                });
+                const bizLegendEl = document.getElementById('biz-type-legend');
+                if (bizLegendEl) {
+                    bizLegendEl.innerHTML = bizLegendHtml || '<li style="color:var(--text-secondary); font-style:italic;">Belum ada data</li>';
+                }
+
+                // 3. Update Company Age Chart
+                const ageLabels = ['< 1 tahun', '1 - 3 tahun', '> 3 tahun'];
+                const ageValues = ageLabels.map(l => data.age_dist[l] || 0);
+                if (window.companyAgeChart) {
+                    window.companyAgeChart.data.datasets[0].data = ageValues;
+                    window.companyAgeChart.update();
+                }
+
+                // 4. Update Gender Chart & List
+                const gLabels = Object.keys(data.gender_dist).map(l => l.charAt(0).toUpperCase() + l.slice(1));
+                const gValues = Object.values(data.gender_dist);
+                const gColors = Object.keys(data.gender_dist).map(l => l === 'laki-laki' ? '#ffffff' : (l === 'perempuan' ? '#a3a3a3' : '#444444'));
+                if (window.genderChart) {
+                    window.genderChart.data.labels = gLabels;
+                    window.genderChart.data.datasets[0].data = gValues;
+                    window.genderChart.data.datasets[0].backgroundColor = gColors;
+                    window.genderChart.update();
+                }
+                
+                let genderHtml = '';
+                const totalOwners = gValues.reduce((a, b) => a + b, 0);
+                Object.keys(data.gender_dist).forEach((g) => {
+                    const count = data.gender_dist[g];
+                    const pct = totalOwners > 0 ? Math.round((count / totalOwners) * 100) : 0;
+                    const color = g === 'laki-laki' ? '#fff' : (g === 'perempuan' ? '#a3a3a3' : '#444');
+                    genderHtml += `<li><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:8px;"></span>${g.charAt(0).toUpperCase() + g.slice(1)} (${pct}%)</li>`;
+                });
+                const genderLegendEl = document.getElementById('gender-legend');
+                if (genderLegendEl) {
+                    genderLegendEl.innerHTML = genderHtml;
+                }
+
+                // 5. Update Health Card Body
+                const healthCardBody = document.getElementById('health-card-body');
+                if (healthCardBody) {
+                    if (!data.has_umkm) {
+                        healthCardBody.innerHTML = `
+                            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height: 100%; text-align: center; padding: 40px 0;">
+                                <i class="fa-solid fa-store-slash" style="font-size: 40px; color: var(--text-secondary); margin-bottom: 16px;"></i>
+                                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">UMKM anda belum terdaftar</div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 24px;">daftarkan segera umkm anda</div>
+                                <button class="btn-sm btn-sm-solid" onclick="window.location='{{ route('tambah-umkm') }}'">Daftar Sekarang</button>
+                            </div>`;
+                    } else if (!data.has_assessment) {
+                        healthCardBody.innerHTML = `
+                            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height: 100%; text-align: center; padding: 40px 0;">
+                                <i class="fa-solid fa-file-circle-exclamation" style="font-size: 40px; color: var(--text-secondary); margin-bottom: 16px;"></i>
+                                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Anda belum melakukan assessment</div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 24px;">Lakukan evaluasi untuk mengetahui kesehatan UMKM Anda</div>
+                                <button class="btn-sm btn-sm-solid" onclick="window.location='{{ route('assessment') }}'">Buat Assessment</button>
+                            </div>`;
+                    } else if (data.my_avg_health == 0) {
+                        healthCardBody.innerHTML = `
+                            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height: 100%; text-align: center; padding: 40px 0;">
+                                <i class="fa-solid fa-spinner fa-spin" style="font-size: 40px; color: var(--text-secondary); margin-bottom: 16px;"></i>
+                                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Assessment sedang diproses</div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 24px;">Grafik akan muncul secara otomatis setelah data mencukupi dan dikalkulasi.</div>
+                                <button class="btn-sm btn-sm-outline" onclick="window.location='{{ route('monitoring') }}'">Pantau Respon</button>
+                            </div>`;
+                    } else {
+                        const canvas = document.getElementById('healthGauge');
+                        if (!canvas) {
+                            let factorBarsHtml = '';
+                            data.my_factors.forEach(f => {
+                                const sc = Math.round(f.avg_score);
+                                let color = '#f87171';
+                                if (sc > 75) color = '#4ade80';
+                                else if (sc > 50) color = '#818cf8';
+                                else if (sc > 25) color = '#facc15';
+
+                                factorBarsHtml += `
+                                    <div class="f-item">
+                                        <div class="f-label"><span>${f.nama_factor}</span><span style="color:${color};">${sc}%</span></div>
+                                        <div class="f-track"><div class="f-fill" style="width:${sc}%;background:${color};"></div></div>
+                                    </div>`;
+                            });
+
+                            healthCardBody.innerHTML = `
+                                <div class="health-gauge-wrap">
+                                    <canvas id="healthGauge"></canvas>
+                                    <div class="health-gauge-label">
+                                        <div class="health-pct">${data.my_avg_health}%</div>
+                                        <div class="health-sub">HEALTH SCORE</div>
+                                    </div>
+                                </div>
+                                <div class="factor-bar-row">${factorBarsHtml}</div>`;
+
+                            const avgHealth = data.my_avg_health;
+                            let gaugeHealthColor = '#f87171';
+                            if (avgHealth > 75) gaugeHealthColor = '#4ade80';
+                            else if (avgHealth > 50) gaugeHealthColor = '#818cf8';
+                            else if (avgHealth > 25) gaugeHealthColor = '#facc15';
+
+                            window.healthGauge = new Chart(document.getElementById('healthGauge'), {
+                                type: 'doughnut',
+                                data: {
+                                    datasets: [{
+                                        data: [avgHealth, 100 - avgHealth],
+                                        backgroundColor: [gaugeHealthColor,'#1e1e1e'],
+                                        borderWidth: 0,
+                                        cutout: '82%',
+                                        circumference: 200,
+                                        rotation: 260
+                                    }]
+                                },
+                                options: { plugins: { legend:{ display:false }, tooltip:{ enabled:false } }, maintainAspectRatio: false, animation: { duration: 1200 } }
+                            });
+                        } else {
+                            document.querySelector('.health-pct').innerText = data.my_avg_health + '%';
+                            
+                            const avgHealth = data.my_avg_health;
+                            let gaugeHealthColor = '#f87171';
+                            if (avgHealth > 75) gaugeHealthColor = '#4ade80';
+                            else if (avgHealth > 50) gaugeHealthColor = '#818cf8';
+                            else if (avgHealth > 25) gaugeHealthColor = '#facc15';
+
+                            if (window.healthGauge) {
+                                window.healthGauge.data.datasets[0].data = [avgHealth, 100 - avgHealth];
+                                window.healthGauge.data.datasets[0].backgroundColor = [gaugeHealthColor, '#1e1e1e'];
+                                window.healthGauge.update();
+                            }
+
+                            let factorBarsHtml = '';
+                            data.my_factors.forEach(f => {
+                                const sc = Math.round(f.avg_score);
+                                let color = '#f87171';
+                                if (sc > 75) color = '#4ade80';
+                                else if (sc > 50) color = '#818cf8';
+                                else if (sc > 25) color = '#facc15';
+
+                                factorBarsHtml += `
+                                    <div class="f-item">
+                                        <div class="f-label"><span>${f.nama_factor}</span><span style="color:${color};">${sc}%</span></div>
+                                        <div class="f-track"><div class="f-fill" style="width:${sc}%;background:${color};"></div></div>
+                                    </div>`;
+                            });
+                            const factorRow = document.querySelector('.factor-bar-row');
+                            if (factorRow) factorRow.innerHTML = factorBarsHtml;
+                        }
+
+                        const badgeContainer = document.querySelector('.health-card .badge');
+                        if (badgeContainer) {
+                            let bColor = '#f87171';
+                            let bBg = 'rgba(248,113,113,.12)';
+                            const categoryClean = data.my_health_category.replace('_', ' ').toUpperCase();
+                            if (data.my_avg_health > 75) { bColor = '#4ade80'; bBg = 'rgba(74,222,128,.12)'; }
+                            else if (data.my_avg_health > 50) { bColor = '#818cf8'; bBg = 'rgba(129,140,248,.12)'; }
+                            else if (data.my_avg_health > 25) { bColor = '#facc15'; bBg = 'rgba(250,204,21,.12)'; }
+                            
+                            badgeContainer.style.backgroundColor = bBg;
+                            badgeContainer.style.color = bColor;
+                            badgeContainer.innerText = categoryClean;
+                        }
+                    }
+                }
+
+                // 6. Update Top UMKM Table
+                let tableHtml = '';
+                data.top_umkms.forEach((top, idx) => {
+                    let badgeHtml = '';
+                    if (top.overall_score > 75) {
+                        badgeHtml = '<span class="badge badge-stabil" style="padding:4px 10px;font-size:10px;background:rgba(74,222,128,.12);color:#4ade80;">SANGAT SEHAT</span>';
+                    } else if (top.overall_score > 50) {
+                        badgeHtml = '<span class="badge badge-stabil" style="padding:4px 10px;font-size:10px;background:rgba(129,140,248,.12);color:#818cf8;">SEHAT</span>';
+                    } else if (top.overall_score > 25) {
+                        badgeHtml = '<span class="badge badge-warn" style="padding:4px 10px;font-size:10px;">CUKUP SEHAT</span>';
+                    } else {
+                        badgeHtml = '<span class="badge badge-kritis" style="padding:4px 10px;font-size:10px;">KURANG SEHAT</span>';
+                    }
+
+                    tableHtml += `
+                        <tr>
+                            <td><div class="rank-num">${idx + 1}</div></td>
+                            <td style="font-weight:600;">${top.nama_umkm}</td>
+                            <td style="color:var(--text-secondary);">${top.sektor_usaha || '-'}</td>
+                            <td>${badgeHtml}</td>
+                            <td style="text-align:right;"><span class="rank-score">${parseFloat(top.overall_score).toFixed(1)}</span></td>
+                        </tr>`;
+                });
+                const rBody = document.getElementById('rank-table-body');
+                if (rBody) {
+                    rBody.innerHTML = tableHtml;
+                }
+            })
+            .catch(err => console.error('Poller error:', err));
+    }, 10000);
+}
+
+// Run Poller on load
+document.addEventListener('DOMContentLoaded', () => {
+    startDashboardPoller();
 });
 
 

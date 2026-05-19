@@ -99,7 +99,7 @@
             <span style="font-weight: 600; font-size: 14px;">Skor Kesehatan Keseluruhan</span>
         </div>
         <div style="display: flex; align-items: baseline; gap: 8px;">
-            <span style="font-size: 48px; font-weight: 700;">{{ $health_score ? number_format($health_score->overall_score, 1) : '0.0' }}</span>
+            <span id="overall-score-val" style="font-size: 48px; font-weight: 700;">{{ $health_score ? number_format($health_score->overall_score, 1) : '0.0' }}</span>
             <span style="font-size: 20px; color: var(--text-secondary);">/ 100</span>
         </div>
         <div style="margin-top: 16px;">
@@ -124,7 +124,7 @@
                 // Kategori sekarang sudah dalam bahasa Indonesia dari DB
                 $category = $health_score ? $health_score->category : 'N/A';
             @endphp
-            <span style="font-size: 10px; padding: 4px 8px; background: {{ $scoreBg }}; color: {{ $scoreColor }}; border-radius: 4px; font-weight: 700;">{{ str_replace('_', ' ', strtoupper($category)) }}</span>
+            <span id="overall-score-category" style="font-size: 10px; padding: 4px 8px; background: {{ $scoreBg }}; color: {{ $scoreColor }}; border-radius: 4px; font-weight: 700;">{{ str_replace('_', ' ', strtoupper($category)) }}</span>
         </div>
     </div>
 
@@ -134,9 +134,9 @@
             <span style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Faktor Tertinggi</span>
             <i class="fa-solid fa-arrow-trend-up" style="color: var(--success);"></i>
         </div>
-        <h3 style="font-size: 20px; margin-bottom: 12px;">{{ $highlights['highest']['factor'] ?? 'N/A' }}</h3>
-        <div style="height: 8px; background: #222; border-radius: 4px; margin-bottom: 8px;"><div style="width: {{ $highlights['highest']['score'] ?? 0 }}%; height: 100%; background: var(--success); border-radius: 4px;"></div></div>
-        <span style="font-size: 12px; font-weight: 600;">{{ $highlights['highest']['score'] ?? 0 }}%</span>
+        <h3 id="highest-factor-title" style="font-size: 20px; margin-bottom: 12px;">{{ $highlights['highest']['factor'] ?? 'N/A' }}</h3>
+        <div style="height: 8px; background: #222; border-radius: 4px; margin-bottom: 8px;"><div id="highest-factor-fill" style="width: {{ $highlights['highest']['score'] ?? 0 }}%; height: 100%; background: var(--success); border-radius: 4px;"></div></div>
+        <span id="highest-factor-score" style="font-size: 12px; font-weight: 600;">{{ $highlights['highest']['score'] ?? 0 }}%</span>
     </div>
 
     <!-- Lowest Factor -->
@@ -145,9 +145,9 @@
             <span style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Faktor Terendah</span>
             <i class="fa-solid fa-arrow-trend-down" style="color: var(--danger);"></i>
         </div>
-        <h3 style="font-size: 20px; margin-bottom: 12px;">{{ $highlights['lowest']['factor'] ?? 'N/A' }}</h3>
-        <div style="height: 8px; background: #222; border-radius: 4px; margin-bottom: 8px;"><div style="width: {{ $highlights['lowest']['score'] ?? 0 }}%; height: 100%; background: var(--danger); border-radius: 4px;"></div></div>
-        <span style="font-size: 12px; font-weight: 600;">{{ $highlights['lowest']['score'] ?? 0 }}%</span>
+        <h3 id="lowest-factor-title" style="font-size: 20px; margin-bottom: 12px;">{{ $highlights['lowest']['factor'] ?? 'N/A' }}</h3>
+        <div style="height: 8px; background: #222; border-radius: 4px; margin-bottom: 8px;"><div id="lowest-factor-fill" style="width: {{ $highlights['lowest']['score'] ?? 0 }}%; height: 100%; background: var(--danger); border-radius: 4px;"></div></div>
+        <span id="lowest-factor-score" style="font-size: 12px; font-weight: 600;">{{ $highlights['lowest']['score'] ?? 0 }}%</span>
     </div>
 </div>
 
@@ -158,7 +158,7 @@
     </div>
     <div>
         <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">Active Insight</div>
-        <p style="font-size: 14px;">{!! $recommendations->first()->recommendation_text ?? 'Tidak ada wawasan aktif.' !!}</p>
+        <p id="active-insight-text" style="font-size: 14px;">{!! $recommendations->first()->recommendation_text ?? 'Tidak ada wawasan aktif.' !!}</p>
     </div>
 </div>
 
@@ -197,7 +197,7 @@
     const radarScores = radarData.map(d => d.score);
 
     // Radar Chart
-    new Chart(document.getElementById('factorRadarChart'), {
+    window.factorRadarChart = new Chart(document.getElementById('factorRadarChart'), {
         type: 'radar',
         data: {
             labels: radarLabels,
@@ -229,7 +229,7 @@
         }
     });
 
-    const outlierData = @json($outliers);
+    window.outlierData = @json($outliers);
     const abbreviationMap = {
         'organizational values': 'OV',
         'organization value': 'OV',
@@ -245,11 +245,11 @@
         'economic performence': 'ECT',
         'echonomic performence': 'ECT'
     };
-    const boxplotLabels = outlierData.map(d => d.nama_factor);
-    const boxplotDataset = outlierData.map(d => d.stats);
+    const boxplotLabels = window.outlierData.map(d => d.nama_factor);
+    const boxplotDataset = window.outlierData.map(d => d.stats);
 
     // Outlier Box Plot Chart
-    new Chart(document.getElementById('outlierChart'), {
+    window.outlierChart = new Chart(document.getElementById('outlierChart'), {
         type: 'boxplot',
         data: {
             labels: boxplotLabels,
@@ -285,7 +285,7 @@
                     callbacks: {
                         title: (tooltipItems) => {
                             const index = tooltipItems[0].dataIndex;
-                            return outlierData[index] ? outlierData[index].nama_factor : '';
+                            return window.outlierData[index] ? window.outlierData[index].nama_factor : '';
                         },
                         label: (ctx) => {
                             const v = ctx.raw;
@@ -325,5 +325,75 @@
             }
         }
     });
+
+    function startProfilFaktorPoller() {
+        setInterval(() => {
+            fetch('{{ route('api.realtime.profil-faktor') }}?umkm_id={{ $selected_umkm_id }}&assessment_id={{ $selected_assessment_id }}')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) return;
+
+                    // 1. Update overall score text
+                    if (data.health_score) {
+                        const score = parseFloat(data.health_score.overall_score).toFixed(1);
+                        document.getElementById('overall-score-val').innerText = score;
+                        
+                        let bColor = '#f87171';
+                        let bBg = 'rgba(248,113,113,.12)';
+                        if (score > 75) { bColor = '#4ade80'; bBg = 'rgba(74,222,128,.12)'; }
+                        else if (score > 50) { bColor = '#818cf8'; bBg = 'rgba(129,140,248,.12)'; }
+                        else if (score > 25) { bColor = '#facc15'; bBg = 'rgba(250,204,21,.12)'; }
+
+                        const badge = document.getElementById('overall-score-category');
+                        if (badge) {
+                            badge.style.color = bColor;
+                            badge.style.backgroundColor = bBg;
+                            badge.innerText = data.health_score.category.replace('_', ' ').toUpperCase();
+                        }
+                    }
+
+                    // 2. Update Highlights
+                    if (data.highlights) {
+                        if (data.highlights.highest) {
+                            document.getElementById('highest-factor-title').innerText = data.highlights.highest.factor || 'N/A';
+                            document.getElementById('highest-factor-fill').style.width = (data.highlights.highest.score || 0) + '%';
+                            document.getElementById('highest-factor-score').innerText = (data.highlights.highest.score || 0) + '%';
+                        }
+                        if (data.highlights.lowest) {
+                            document.getElementById('lowest-factor-title').innerText = data.highlights.lowest.factor || 'N/A';
+                            document.getElementById('lowest-factor-fill').style.width = (data.highlights.lowest.score || 0) + '%';
+                            document.getElementById('lowest-factor-score').innerText = (data.highlights.lowest.score || 0) + '%';
+                        }
+                    }
+
+                    // 3. Update Active Insight
+                    if (data.recommendations && data.recommendations.length > 0) {
+                        document.getElementById('active-insight-text').innerHTML = data.recommendations[0].recommendation_text;
+                    }
+
+                    // 4. Update Radar Chart
+                    if (window.factorRadarChart && data.radar_chart) {
+                        const radarLabels = data.radar_chart.map(d => [d.factor, d.score + '%']);
+                        const radarScores = data.radar_chart.map(d => d.score);
+                        window.factorRadarChart.data.labels = radarLabels;
+                        window.factorRadarChart.data.datasets[0].data = radarScores;
+                        window.factorRadarChart.update();
+                    }
+
+                    // 5. Update Outlier Boxplot Chart
+                    if (window.outlierChart && data.outliers) {
+                        window.outlierData = data.outliers; // update global ref for tooltip
+                        const boxplotLabels = data.outliers.map(d => d.nama_factor);
+                        const boxplotDataset = data.outliers.map(d => d.stats);
+                        window.outlierChart.data.labels = boxplotLabels;
+                        window.outlierChart.data.datasets[0].data = boxplotDataset;
+                        window.outlierChart.update();
+                    }
+                })
+                .catch(err => console.error('Poller error:', err));
+        }, 10000);
+    }
+
+    document.addEventListener('DOMContentLoaded', startProfilFaktorPoller);
 </script>
 @endsection
