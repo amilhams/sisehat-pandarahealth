@@ -45,9 +45,13 @@ export const options = (TARGET_ENV === 'NGROK')
         }
     };
 
-// Kredensial Akun Owner default lokal Anda
-const OWNER_EMAIL = 'owner_1@example.com'; 
-const OWNER_PASSWORD = 'password123'; 
+// Kredensial Akun Owner yang disesuaikan secara dinamis
+const OWNER_EMAIL = (TARGET_ENV === 'INFINITY_FREE') 
+    ? 'akubaruloginlagi@gmail.com' 
+    : 'owner_1@example.com'; 
+const OWNER_PASSWORD = (TARGET_ENV === 'INFINITY_FREE') 
+    ? 'akubisa12' 
+    : 'password123'; 
 
 export default function () {
     // Siapkan parameter header untuk bypass firewall & penyamaran User-Agent
