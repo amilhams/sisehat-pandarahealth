@@ -1635,7 +1635,22 @@
                     }
                 });
 
-                const data = await response.json();
+                // Periksa apakah respons berupa JSON
+                const contentType = response.headers.get("content-type");
+                let data;
+                let isJson = contentType && contentType.includes("application/json");
+
+                if (isJson) {
+                    data = await response.json();
+                } else {
+                    const rawText = await response.text();
+                    data = {
+                        error: "Server tidak mengembalikan respons JSON (Intersepsi Hosting / Firewall)",
+                        http_status: response.status,
+                        http_status_text: response.statusText,
+                        preview: rawText.substring(0, 300) + (rawText.length > 300 ? "..." : "")
+                    };
+                }
                 
                 // Show Result
                 resultWrapper.style.display = "block";
