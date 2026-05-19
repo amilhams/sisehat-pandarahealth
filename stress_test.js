@@ -6,12 +6,14 @@ import { sleep, check } from 'k6';
    ========================================================================= */
 
 // --- TARGET PILIHAN A: NGROK / LOCALHOST (DIREKOMENDASIKAN UNTUK TRAFIK TINGGI) ---
-const TARGET_ENV = 'NGROK'; // Menggunakan target lokal Laragon/Ngrok
-const BASE_URL = 'http://sisehat.test'; // URL virtual host Laragon Anda
+const TARGET_ENV = 'INFINITY_FREE'; // Menggunakan target InfinityFree
+const BASE_URL = (TARGET_ENV === 'INFINITY_FREE') 
+    ? 'http://pandarahealth.infinityfree.me' 
+    : 'http://sisehat.test'; // URL virtual host Laragon Anda
 
 // --- TARGET PILIHAN B: INFINITYFREE ONLINE (WAJIB BYPASS FIREWALL) ---
 // Trik Bypass: Buka web Anda di Chrome -> Tekan F12 -> Application -> Cookies -> Salin Value "__test"
-const INFINITYFREE_COOKIE_TEST = 'GANTI_DENGAN_COOKIE_TEST_ANDA_DI_SINI'; 
+const INFINITYFREE_COOKIE_TEST = '43f0f2e3a1bc084a0ee8188ccf7dd558'; 
 
 /* =========================================================================
    PENGATURAN VIRTUAL USERS (VUs) & DURASI UJI BEBAN
@@ -33,8 +35,8 @@ export const options = (TARGET_ENV === 'NGROK')
     : {
         // Skenario Online InfinityFree (AMAN, Trafik dibatasi agar tidak di-suspend 24 jam)
         stages: [
-            { duration: '20s', target: 5 },   // Cukup 5 pengguna aktif bersamaan
-            { duration: '30s', target: 10 },  // Maksimal 10 pengguna aktif
+            { duration: '20s', target: 4 },   // Cukup 4 pengguna aktif bersamaan
+            { duration: '30s', target: 7 },   // Maksimal 7 pengguna aktif (aman dari suspend)
             { duration: '20s', target: 0 },   // Cooldown ke 0
         ],
         thresholds: {
@@ -53,7 +55,7 @@ export default function () {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',
         },
     };
 
