@@ -95,7 +95,7 @@ class AssessmentController extends Controller
             $type = 'owner';
         }
 
-        $questions = Question::where('answered_by', $type)->get();
+        $questions = Question::where('question_role', $type)->get();
 
         return response()->json($questions);
     }
@@ -111,7 +111,7 @@ class AssessmentController extends Controller
             return response()->json(['error' => 'Link survey tidak valid atau sudah kadaluarsa.'], 403);
         }
 
-        $questions = Question::where('answered_by', 'employee')->get();
+        $questions = Question::where('question_role', 'employee')->get();
 
         return response()->json([
             'assessment_id' => $tokenRecord->assessment_id,

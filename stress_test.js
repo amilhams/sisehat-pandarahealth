@@ -44,7 +44,7 @@ export const options = (TARGET_ENV === 'NGROK')
     };
 
 // Kredensial Akun Owner default lokal Anda
-const OWNER_EMAIL = 'admin1@gmail.com'; 
+const OWNER_EMAIL = 'owner_1@example.com'; 
 const OWNER_PASSWORD = 'password123'; 
 
 export default function () {
@@ -99,7 +99,13 @@ export default function () {
     });
 
     // Jika login sukses, uji kueri database berat dengan cookie sesi
-    if (loginOk) {
+    if (resLogin.status === 200) {
+        let ownerId = null;
+        try {
+            const loginBody = JSON.parse(resLogin.body);
+            ownerId = loginBody.data.owner_id;
+        } catch (e) {}
+
         const sessionParams = {
             headers: Object.assign({}, params.headers, {
                 'Cookie': (TARGET_ENV === 'INFINITY_FREE') 
@@ -108,54 +114,68 @@ export default function () {
             })
         };
 
-        // --- TAHAP 4: Dynamic Assessment Fetch & Submission ---
-        // A. Ambil detail UMKM untuk mendapatkan ID Assessment yang aktif
-        let resUmkm = http.get(`${BASE_URL}/api/umkm/UMKM001`, sessionParams);
-        let umkmData = null;
-        try {
-            umkmData = JSON.parse(resUmkm.body);
-        } catch (e) {}
-
-        if (umkmData && umkmData.data && umkmData.data.assessments && umkmData.data.assessments.length > 0) {
-            const activeAssessment = umkmData.data.assessments[0];
-            const assessmentId = activeAssessment.assessment_id;
-
-            // B. Ambil daftar pertanyaan untuk Employee secara dinamis
-            let resQuestions = http.get(`${BASE_URL}/api/assessment/questions?type=employee`, sessionParams);
-            let questionsData = null;
+        if (ownerId) {
+            // --- TAHAP 4: Dynamic Assessment Fetch & Submission ---
+            // A. Dapatkan daftar UMKM milik Owner ini
+            let resUmkmList = http.get(`${BASE_URL}/api/umkm?owner_id=${ownerId}`, sessionParams);
+            let umkmList = null;
             try {
-                questionsData = JSON.parse(resQuestions.body);
+                umkmList = JSON.parse(resUmkmList.body);
             } catch (e) {}
 
-            if (questionsData && Array.isArray(questionsData)) {
-                // C. Buat payload jawaban kuesioner acak (nilai 1-5)
-                const answers = questionsData.map(q => {
-                    return {
-                        question_id: q.question_id,
-                        answer_value: Math.floor(Math.random() * 5) + 1 // Skor acak 1-5
-                    };
-                });
+            if (umkmList && umkmList.data && umkmList.data.length > 0) {
+                const firstUmkm = umkmList.data[0];
+                const umkmId = firstUmkm.umkm_id;
 
-                const submitPayload = JSON.stringify({
-                    assessment_id: assessmentId,
-                    respondent_type: 'employee',
-                    employee_code: 'EMP-' + Math.floor(Math.random() * 1000000), // Kode karyawan acak
-                    answers: answers
-                });
+                // B. Ambil detail UMKM untuk mendapatkan ID Assessment yang aktif
+                let resUmkm = http.get(`${BASE_URL}/api/umkm/${umkmId}`, sessionParams);
+                let umkmData = null;
+                try {
+                    umkmData = JSON.parse(resUmkm.body);
+                } catch (e) {}
 
-                // D. Kirim jawaban kuesioner ke API
-                let resSubmit = http.post(`${BASE_URL}/api/responses/submit`, submitPayload, sessionParams);
-                check(resSubmit, {
-                    'API Submit Jawaban sukses (200)': (r) => r.status === 200,
-                    'API Submit response valid JSON': (r) => {
-                        try {
-                            return JSON.parse(r.body).message === 'Jawaban berhasil disimpan.';
-                        } catch (e) {
-                            return false;
-                        }
-                    },
-                    'API Submit load time < 500ms': (r) => r.timings.duration < 500,
-                });
+                if (umkmData && umkmData.data && umkmData.data.assessments && umkmData.data.assessments.length > 0) {
+                    const activeAssessment = umkmData.data.assessments[0];
+                    const assessmentId = activeAssessment.assessment_id;
+
+                    // C. Ambil daftar pertanyaan untuk Employee secara dinamis
+                    let resQuestions = http.get(`${BASE_URL}/api/assessment/questions?type=employee`, sessionParams);
+                    let questionsData = null;
+                    try {
+                        questionsData = JSON.parse(resQuestions.body);
+                    } catch (e) {}
+
+                    if (questionsData && Array.isArray(questionsData)) {
+                        // D. Buat payload jawaban kuesioner acak (nilai 1-5)
+                        const answers = questionsData.map(q => {
+                            return {
+                                question_id: q.question_id,
+                                answer_value: Math.floor(Math.random() * 5) + 1 // Skor acak 1-5
+                            };
+                        });
+
+                        const submitPayload = JSON.stringify({
+                            assessment_id: assessmentId,
+                            respondent_type: 'employee',
+                            employee_code: 'EMP-' + Math.floor(Math.random() * 1000000), // Kode karyawan acak
+                            answers: answers
+                        });
+
+                        // E. Kirim jawaban kuesioner ke API
+                        let resSubmit = http.post(`${BASE_URL}/api/responses/submit`, submitPayload, sessionParams);
+                        check(resSubmit, {
+                            'API Submit Jawaban sukses (200)': (r) => r.status === 200,
+                            'API Submit response valid JSON': (r) => {
+                                try {
+                                    return JSON.parse(r.body).message === 'Jawaban berhasil disimpan.';
+                                } catch (e) {
+                                    return false;
+                                }
+                            },
+                            'API Submit load time < 500ms': (r) => r.timings.duration < 500,
+                        });
+                    }
+                }
             }
         }
 
