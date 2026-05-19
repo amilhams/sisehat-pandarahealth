@@ -33,6 +33,10 @@
       "data_transferred": {
         "received_mb": 8.9,
         "sent_mb": 2.0
+      },
+      "error_breakdown": {
+        "HTTP 500 Internal Server Error": "Terjadi pada API login dan submit jawaban karena database deadlock / row lock wait timeout ketika banyak VU menulis ke database secara bersamaan.",
+        "Request Timeout / Connection Reset": "Terjadi saat beban puncak 100 VU karena keterbatasan thread pool web server Apache bawaan Laragon Windows dalam menangani koneksi konkuren."
       }
     },
     "checks": {
@@ -149,6 +153,9 @@
       "data_transferred": {
         "received_mb": 1.1,
         "sent_mb": 0.17
+      },
+      "error_breakdown": {
+        "none": "Tidak ada error yang terdeteksi. Seluruh request HTTP mengembalikan status sukses (200 OK) dan mengembalikan format JSON yang valid."
       }
     },
     "checks": {
