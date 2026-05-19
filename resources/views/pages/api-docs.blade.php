@@ -444,8 +444,8 @@
         <div class="header-container">
             <div style="display: flex; align-items: center; gap: 14px;">
                 <a href="{{ route('beranda') }}" class="logo">
-                    <i class="fa-solid fa-heart-pulse logo-icon"></i>
-                    <span class="logo-text">SiSehat API</span>
+                    <img src="{{ asset('images/logo_pandara.png') }}" alt="Pandara" style="width:36px; height:36px; object-fit:contain; flex-shrink:0;">
+                    <span class="logo-text">Pandara <span style="font-weight: 400; color: var(--text-secondary);">Health API</span></span>
                 </a>
                 <span class="dev-badge">Portal Developer</span>
             </div>
