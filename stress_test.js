@@ -6,8 +6,8 @@ import { sleep, check } from 'k6';
    ========================================================================= */
 
 // --- TARGET PILIHAN A: NGROK / LOCALHOST (DIREKOMENDASIKAN UNTUK TRAFIK TINGGI) ---
-const TARGET_ENV = 'INFINITY_FREE'; // Ubah ke 'INFINITY_FREE' jika ingin menguji web online
-const BASE_URL = 'http://pandarahealth.infinityfree.me'; // Ganti dengan link Ngrok asli Anda
+const TARGET_ENV = 'NGROK'; // Menggunakan target lokal Laragon/Ngrok
+const BASE_URL = 'http://sisehat.test'; // URL virtual host Laragon Anda
 
 // --- TARGET PILIHAN B: INFINITYFREE ONLINE (WAJIB BYPASS FIREWALL) ---
 // Trik Bypass: Buka web Anda di Chrome -> Tekan F12 -> Application -> Cookies -> Salin Value "__test"
@@ -18,16 +18,16 @@ const INFINITYFREE_COOKIE_TEST = 'GANTI_DENGAN_COOKIE_TEST_ANDA_DI_SINI';
    ========================================================================= */
 export const options = (TARGET_ENV === 'NGROK') 
     ? {
-        // Skenario Ngrok/Lokal (SANGAT KUAT, Bisa menampung trafik ekstrim)
+        // Skenario Lokal (50 - 100 VU)
         stages: [
-            { duration: '20s', target: 20 },  // Naikkan trafik ke 20 pengguna dalam 20 detik
-            { duration: '30s', target: 50 },  // Naikkan trafik ke 50 pengguna dalam 30 detik
-            { duration: '30s', target: 100 }, // Puncak ekstrim ke 100 pengguna
-            { duration: '20s', target: 0 },   // Cooldown ke 0
+            { duration: '30s', target: 20 },   // Ramp up ke 20 VU dalam 30 detik
+            { duration: '1m', target: 50 },    // Naik ke 50 VU dalam 1 menit
+            { duration: '1m', target: 100 },   // Naik ke 100 VU dalam 1 menit
+            { duration: '30s', target: 0 },    // Ramp down ke 0 dalam 30 detik
         ],
         thresholds: {
-            http_req_duration: ['p(95)<2000'],
-            http_req_failed: ['rate<0.01'],
+            http_req_duration: ['p(95)<500'],  // KKM diperketat: 95% request harus < 500ms
+            http_req_failed: ['rate<0.01'],    // Tingkat error maksimal 1%
         }
     }
     : {
@@ -66,6 +66,7 @@ export default function () {
     let resWelcome = http.get(`${BASE_URL}/`, params);
     check(resWelcome, {
         'Halaman utama status 200': (r) => r.status === 200,
+        'Halaman utama load time < 500ms': (r) => r.timings.duration < 500,
     });
     sleep(1);
 
@@ -73,6 +74,7 @@ export default function () {
     let resLoginPage = http.get(`${BASE_URL}/login`, params);
     check(resLoginPage, {
         'Halaman login status 200': (r) => r.status === 200,
+        'Halaman login load time < 500ms': (r) => r.timings.duration < 500,
     });
     sleep(1);
 
@@ -85,6 +87,15 @@ export default function () {
     let resLogin = http.post(`${BASE_URL}/api/auth/login`, payload, params);
     let loginOk = check(resLogin, {
         'API Login sukses (200)': (r) => r.status === 200,
+        'API Login response valid JSON': (r) => {
+            try {
+                const body = JSON.parse(r.body);
+                return body.message === 'Login berhasil' || body.hasOwnProperty('data');
+            } catch (e) {
+                return false;
+            }
+        },
+        'API Login load time < 500ms': (r) => r.timings.duration < 500,
     });
 
     // Jika login sukses, uji kueri database berat dengan cookie sesi
@@ -97,10 +108,62 @@ export default function () {
             })
         };
 
-        // --- TAHAP 4: Mengambil Data Urutan UMKM (Kueri Hitung Bobot DSS Berat) ---
+        // --- TAHAP 4: Dynamic Assessment Fetch & Submission ---
+        // A. Ambil detail UMKM untuk mendapatkan ID Assessment yang aktif
+        let resUmkm = http.get(`${BASE_URL}/api/umkm/UMKM001`, sessionParams);
+        let umkmData = null;
+        try {
+            umkmData = JSON.parse(resUmkm.body);
+        } catch (e) {}
+
+        if (umkmData && umkmData.data && umkmData.data.assessments && umkmData.data.assessments.length > 0) {
+            const activeAssessment = umkmData.data.assessments[0];
+            const assessmentId = activeAssessment.assessment_id;
+
+            // B. Ambil daftar pertanyaan untuk Employee secara dinamis
+            let resQuestions = http.get(`${BASE_URL}/api/assessment/questions?type=employee`, sessionParams);
+            let questionsData = null;
+            try {
+                questionsData = JSON.parse(resQuestions.body);
+            } catch (e) {}
+
+            if (questionsData && Array.isArray(questionsData)) {
+                // C. Buat payload jawaban kuesioner acak (nilai 1-5)
+                const answers = questionsData.map(q => {
+                    return {
+                        question_id: q.question_id,
+                        answer_value: Math.floor(Math.random() * 5) + 1 // Skor acak 1-5
+                    };
+                });
+
+                const submitPayload = JSON.stringify({
+                    assessment_id: assessmentId,
+                    respondent_type: 'employee',
+                    employee_code: 'EMP-' + Math.floor(Math.random() * 1000000), // Kode karyawan acak
+                    answers: answers
+                });
+
+                // D. Kirim jawaban kuesioner ke API
+                let resSubmit = http.post(`${BASE_URL}/api/responses/submit`, submitPayload, sessionParams);
+                check(resSubmit, {
+                    'API Submit Jawaban sukses (200)': (r) => r.status === 200,
+                    'API Submit response valid JSON': (r) => {
+                        try {
+                            return JSON.parse(r.body).message === 'Jawaban berhasil disimpan.';
+                        } catch (e) {
+                            return false;
+                        }
+                    },
+                    'API Submit load time < 500ms': (r) => r.timings.duration < 500,
+                });
+            }
+        }
+
+        // --- TAHAP 5: Mengambil Data Urutan UMKM (Kueri Hitung Bobot DSS Berat) ---
         let resRank = http.get(`${BASE_URL}/api/umkm/rank`, sessionParams);
         check(resRank, {
             'API rangking UMKM status 200': (r) => r.status === 200,
+            'API rangking load time < 500ms': (r) => r.timings.duration < 500,
         });
         sleep(2);
     } else {
@@ -108,6 +171,7 @@ export default function () {
         let resQuestions = http.get(`${BASE_URL}/api/assessment/questions?type=owner`, params);
         check(resQuestions, {
             'API Kuesioner status 200': (r) => r.status === 200,
+            'API Kuesioner load time < 500ms': (r) => r.timings.duration < 500,
         });
         sleep(2);
     }

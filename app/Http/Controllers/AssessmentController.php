@@ -85,6 +85,22 @@ class AssessmentController extends Controller
     }
 
     /**
+     * Mengambil daftar pertanyaan berdasarkan tipe (?type=owner|employee)
+     */
+    public function getQuestions(Request $request)
+    {
+        $type = $request->query('type', 'owner');
+        
+        if (!in_array($type, ['owner', 'employee'])) {
+            $type = 'owner';
+        }
+
+        $questions = Question::where('answered_by', $type)->get();
+
+        return response()->json($questions);
+    }
+
+    /**
      * Mengambil pertanyaan berdasarkan token (untuk Employee)
      */
     public function getQuestionsByToken($token)
