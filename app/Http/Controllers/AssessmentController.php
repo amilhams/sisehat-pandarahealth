@@ -171,10 +171,16 @@ class AssessmentController extends Controller
         $assessment = Assessment::find($id);
         if (!$assessment) return response()->json(['error' => 'Not found'], 404);
 
-        $totalRespondents = Response::where('assessment_id', $id)
+        $totalEmployees = Response::where('assessment_id', $id)
             ->where('respondent_type', 'employee')
             ->distinct('employee_code')
             ->count('employee_code');
+
+        $hasOwner = Response::where('assessment_id', $id)
+            ->where('respondent_type', 'owner')
+            ->exists() ? 1 : 0;
+
+        $totalRespondents = $totalEmployees + $hasOwner;
 
         $estimatedScoreData = $this->healthService->calculate($id);
 

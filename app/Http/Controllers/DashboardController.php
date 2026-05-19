@@ -301,9 +301,19 @@ class DashboardController extends Controller
 
         // Aggregate ecosystem statistics
         $totalUmkm = Umkm::count();
-        $totalRespondents = \App\Models\Response::where('respondent_type', 'employee')
+        $totalEmployees = DB::table('responses')
+            ->where('respondent_type', 'employee')
             ->distinct('employee_code')
             ->count('employee_code');
+
+        $totalOwners = DB::table('responses')
+            ->join('assessments', 'responses.assessment_id', '=', 'assessments.assessment_id')
+            ->join('umkms', 'assessments.umkm_id', '=', 'umkms.umkm_id')
+            ->where('responses.respondent_type', 'owner')
+            ->distinct('umkms.owner_id')
+            ->count('umkms.owner_id');
+
+        $totalRespondents = $totalEmployees + $totalOwners;
         
         $healthScores = HealthScore::all();
         $avgHealth = $healthScores->avg('overall_score') ?? 0;
@@ -763,12 +773,18 @@ class DashboardController extends Controller
 
         $id = $assessment->assessment_id;
 
-        $totalRespondents = \App\Models\Response::where('assessment_id', $id)
+        $totalEmployees = \App\Models\Response::where('assessment_id', $id)
             ->where('respondent_type', 'employee')
             ->distinct('employee_code')
             ->count('employee_code');
 
-        $targetRespondents = $assessment->jumlah_karyawan ?? 1;
+        $hasOwner = \App\Models\Response::where('assessment_id', $id)
+            ->where('respondent_type', 'owner')
+            ->exists() ? 1 : 0;
+
+        $totalRespondents = $totalEmployees + $hasOwner;
+
+        $targetRespondents = ($assessment->jumlah_karyawan ?? 0) + 1;
         if ($targetRespondents <= 0) $targetRespondents = 1;
 
         $completionRate = min(round(($totalRespondents / $targetRespondents) * 100), 100);
