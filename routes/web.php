@@ -73,6 +73,7 @@ Route::get('/login', function () { return view('pages.login'); })->name('login')
 Route::get('/register', function () { return view('pages.register'); })->name('register');
 
 Route::get('/api/docs', function () { return view('pages.api-docs'); })->name('api.docs');
+Route::get('/api/docs/full', function () { return view('pages.api-docs-full'); })->name('api.docs.full');
 
 // Status API (Agar ketika dosen membuka /api tidak error 404 & langsung melihat peta dokumentasi API!)
 Route::get('/api', function () {
