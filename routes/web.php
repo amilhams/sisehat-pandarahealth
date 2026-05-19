@@ -72,6 +72,8 @@ Route::get('/run-migration', function() {
 Route::get('/login', function () { return view('pages.login'); })->name('login');
 Route::get('/register', function () { return view('pages.register'); })->name('register');
 
+Route::get('/api/docs', function () { return view('pages.api-docs'); })->name('api.docs');
+
 // Status API (Agar ketika dosen membuka /api tidak error 404 & langsung melihat peta dokumentasi API!)
 Route::get('/api', function () {
     $baseUrl = url('/');
