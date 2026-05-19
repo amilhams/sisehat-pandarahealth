@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiSehat - Kesehatan Organisasi UMKM</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --primary-color: #00f2fe;
+            --secondary-color: #4facfe;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Glowing Background Orbs */
+        .orb {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(180px);
+            z-index: 1;
+            opacity: 0.12;
+        }
+        .orb-left {
+            top: -150px;
+            left: -150px;
+            background: var(--primary-color);
+        }
+        .orb-right {
+            bottom: -150px;
+            right: -150px;
+            background: #8a2be2;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 80px;
+            z-index: 10;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #fff;
+        }
+        .logo-icon {
+            font-size: 26px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover {
+            background: #fff;
+            color: #000;
+            transform: translateY(-1px);
+        }
+
+        /* Hero Section */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 24px;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            color: var(--primary-color);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            display: inline-block;
+        }
+
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 24px;
+            background: linear-gradient(to right, #ffffff 40%, #a0aec0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 36px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 10px 20px rgba(0, 242, 254, 0.15);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.35);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            border-radius: 12px;
+            padding: 16px 36px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Features row */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            width: 100%;
+            max-width: 1100px;
+            margin: 60px auto 100px auto;
+            padding: 0 24px;
+            z-index: 10;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .feature-card:hover {
+            border-color: rgba(0, 242, 254, 0.2);
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateY(-2px);
+        }
+        .feature-icon {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        .feature-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .feature-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 24px 32px; }
+            .hero-title { font-size: 44px; }
+            .features-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Orbs -->
+    <div class="orb orb-left"></div>
+    <div class="orb orb-right"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-heart-pulse logo-icon"></i>
+            <span class="logo-text">SiSehat</span>
+        </a>
+        <a href="login.html" class="nav-btn">Masuk Dasbor</a>
+    </nav>
+
+    <!-- Hero -->
+    <main class="hero">
+        <span class="hero-badge">Sistem Pendukung Keputusan (DSS)</span>
+        <h1 class="hero-title">Ukur dan Optimalkan Kesehatan Organisasi UMKM</h1>
+        <p class="hero-desc">Bantu UMKM Anda mendeteksi pencilan kinerja, memantau tingkat stres karyawan, dan mengambil keputusan berbasis data ilmiah secara dinamis.</p>
+        
+        <div class="hero-actions">
+            <a href="register.html" class="btn-primary">Mulai Sekarang — Gratis</a>
+            <a href="login.html" class="btn-secondary">Masuk Akun Owner</a>
+        </div>
+    </main>
+
+    <!-- Features -->
+    <section class="features-grid">
+        <div class="feature-card">
+            <i class="fa-solid fa-chart-pie feature-icon"></i>
+            <h3 class="feature-title">Grafik Radar Multi-Dimensi</h3>
+            <p class="feature-desc">Menganalisis 6 pilar kesehatan organisasi secara visual untuk memahami kekuatan dan kelemahan operasional secara seimbang.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa-solid fa-box-tissue feature-icon"></i>
+            <h3 class="feature-title">Analisis Outlier Boxplot</h3>
+            <p class="feature-desc">Mendeteksi anomali data kinerja karyawan secara otomatis menggunakan formula statistik IQR untuk tindakan mitigasi cepat.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa-solid fa-shield-halved feature-icon"></i>
+            <h3 class="feature-title">Kerahasiaan Terjamin</h3>
+            <p class="feature-desc">Keamanan pengumpulan data kuesioner berskala enkripsi, menjaga integritas survei karyawan secara profesional.</p>
+        </div>
+    </section>
+
+</body>
+</html>

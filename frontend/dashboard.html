@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasbor - SiSehat</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-color: rgba(22, 24, 30, 0.7);
+            --primary-color: #00f2fe;
+            --secondary-color: #4facfe;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --card-hover: rgba(255, 255, 255, 0.03);
+            --success-color: #2ecc71;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Glowing Background Orbs */
+        .orb {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            filter: blur(150px);
+            z-index: 1;
+            opacity: 0.1;
+        }
+        .orb-left {
+            top: -100px;
+            left: -100px;
+            background: var(--primary-color);
+        }
+        .orb-right {
+            bottom: -150px;
+            right: -100px;
+            background: #8a2be2;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            z-index: 10;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            background: rgba(11, 12, 16, 0.5);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #fff;
+        }
+        .logo-icon {
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .btn-logout {
+            background: rgba(255, 77, 77, 0.1);
+            border: 1px solid rgba(255, 77, 77, 0.2);
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: #ff4d4d;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover {
+            background: #ff4d4d;
+            color: #fff;
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 40px auto;
+            padding: 0 40px;
+            z-index: 10;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+        }
+        .header-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .header-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 242, 254, 0.25);
+        }
+
+        /* Grid */
+        .umkm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .umkm-card {
+            background: var(--card-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(16px);
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .umkm-card:hover {
+            border-color: rgba(0, 242, 254, 0.25);
+            background: var(--card-hover);
+            transform: translateY(-2px);
+        }
+
+        .umkm-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .umkm-card:hover::before {
+            opacity: 1;
+        }
+
+        .umkm-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .umkm-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .meta-icon {
+            color: var(--primary-color);
+            width: 16px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-action-primary {
+            flex: 1;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            color: var(--primary-color);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-action-primary:hover {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-card {
+            background: #11141a;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 460px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            animation: modalIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        @keyframes modalIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+        .modal-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+        }
+        .btn-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-close:hover {
+            color: #fff;
+        }
+
+        /* Loader */
+        .loader {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-secondary);
+        }
+        .loader-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 40px;
+            background: var(--card-color);
+            border: 1px dashed var(--border-color);
+            border-radius: 24px;
+        }
+        .empty-icon {
+            font-size: 48px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            opacity: 0.5;
+        }
+        .empty-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .empty-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        /* Form styling inside Modal */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        .btn-cancel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .btn-confirm {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: #000;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-confirm:hover {
+            box-shadow: 0 6px 15px rgba(0, 242, 254, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Orbs -->
+    <div class="orb orb-left"></div>
+    <div class="orb orb-right"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="dashboard.html" class="logo">
+            <i class="fa-solid fa-heart-pulse logo-icon"></i>
+            <span class="logo-text">SiSehat</span>
+        </a>
+        <div class="user-nav">
+            <div class="user-info">
+                <div class="user-avatar" id="userInitial">U</div>
+                <span class="user-name" id="userName">Nama Pengguna</span>
+            </div>
+            <button class="btn-logout" id="logoutBtn">Keluar</button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main>
+        <div class="header-row">
+            <div>
+                <h1 class="header-title">Daftar UMKM Organisasi Anda</h1>
+                <p class="header-desc">Pilih atau tambahkan unit usaha untuk mengelola kuesioner dan penilaian DSS.</p>
+            </div>
+            <button class="btn-add" id="openModalBtn">
+                <i class="fa-solid fa-plus"></i> Tambah UMKM
+            </button>
+        </div>
+
+        <!-- Grid Cards -->
+        <div class="umkm-grid" id="umkmContainer">
+            <div class="loader">
+                <i class="fa-solid fa-circle-notch loader-icon"></i>
+                <p>Mengambil data dari server cloud...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add UMKM Modal -->
+    <div class="modal" id="addUmkmModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Tambah UMKM Baru</h3>
+                <button class="btn-close" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="addUmkmForm">
+                <div class="form-group">
+                    <label class="form-label" for="nama_umkm">Nama UMKM / Unit Usaha</label>
+                    <input type="text" id="nama_umkm" class="form-input" placeholder="Contoh: Kopi Kita Sejahtera" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="sektor_usaha">Sektor Bisnis</label>
+                    <input type="text" id="sektor_usaha" class="form-input" placeholder="Contoh: F&B / Manufaktur / Retail" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="umur_usaha">Umur Usaha (Tahun)</label>
+                    <input type="text" id="umur_usaha" class="form-input" placeholder="Contoh: 3 Tahun" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelModalBtn">Batal</button>
+                    <button type="submit" class="btn-confirm" id="saveUmkmBtn">Simpan Unit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://pandarahealth.infinityfree.me/api';
+
+        // 1. Validasi Sesi Login Lokal
+        const userJson = localStorage.getItem('sisehat_user');
+        if (!userJson) {
+            window.location.href = 'login.html';
+        }
+        const user = JSON.parse(userJson);
+
+        // 2. Set Informasi User di Navbar
+        document.getElementById('userName').textContent = user.name;
+        document.getElementById('userInitial').textContent = user.name.charAt(0).toUpperCase();
+
+        // 3. Logout Button Action
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('sisehat_user');
+            window.location.href = 'login.html';
+        });
+
+        // 4. Ambil Daftar UMKM dari Backend API
+        async function fetchUmkms() {
+            const container = document.getElementById('umkmContainer');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/umkm?owner_id=${user.owner_id}`);
+                const resData = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(resData.error || 'Gagal mengambil data.');
+                }
+
+                const umkms = resData.data;
+
+                if (umkms.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-regular fa-folder-open empty-icon"></i>
+                            <h3 class="empty-title">Belum Ada UMKM</h3>
+                            <p class="empty-desc">Unit usaha Anda masih kosong. Silakan tambahkan UMKM pertama Anda untuk memulai survei penilaian.</p>
+                            <button class="btn-add" style="margin: 0 auto;" onclick="openModal()">
+                                <i class="fa-solid fa-plus"></i> Tambah UMKM Pertama
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Render List
+                container.innerHTML = umkms.map(item => `
+                    <div class="umkm-card">
+                        <h3 class="umkm-name">${item.nama_umkm}</h3>
+                        <div class="umkm-meta">
+                            <div class="meta-item">
+                                <i class="fa-solid fa-briefcase meta-icon"></i>
+                                <span>Sektor: ${item.sektor_usaha || 'N/A'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fa-regular fa-clock meta-icon"></i>
+                                <span>Umur Usaha: ${item.umur_usaha || 'N/A'}</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-action-primary" onclick="alert('Rute visual kuesioner akan diintegrasikan selanjutnya!')">
+                                <i class="fa-solid fa-clipboard-list"></i> Kelola Kuesioner
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                container.innerHTML = `
+                    <div class="empty-state" style="border-color: rgba(255, 77, 77, 0.2)">
+                        <i class="fa-solid fa-triangle-exclamation empty-icon" style="color: #ff4d4d"></i>
+                        <h3 class="empty-title">Gagal Menghubungkan ke Server</h3>
+                        <p class="empty-desc">${err.message}. Pastikan status backend menyala.</p>
+                        <button class="btn-cancel" style="margin: 0 auto;" onclick="fetchUmkms()">
+                            <i class="fa-solid fa-rotate-right"></i> Coba Hubungkan Kembali
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // 5. Kontrol Modal Tambah UMKM
+        const modal = document.getElementById('addUmkmModal');
+        
+        function openModal() {
+            modal.style.display = 'flex';
+        }
+        function closeModal() {
+            modal.style.display = 'none';
+            document.getElementById('addUmkmForm').reset();
+        }
+
+        document.getElementById('openModalBtn').addEventListener('click', openModal);
+        document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+        document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+
+        // Tutup modal jika klik di luar box
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // 6. Submit Tambah UMKM Form
+        document.getElementById('addUmkmForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const nama_umkm = document.getElementById('nama_umkm').value;
+            const sektor_usaha = document.getElementById('sektor_usaha').value;
+            const umur_usaha = document.getElementById('umur_usaha').value;
+            
+            const saveBtn = document.getElementById('saveUmkmBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Menyimpan...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/umkm`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        owner_id: user.owner_id,
+                        nama_umkm,
+                        sektor_usaha,
+                        umur_usaha
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Gagal menyimpan UMKM baru.');
+                }
+
+                // Sukses
+                closeModal();
+                fetchUmkms();
+
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Simpan Unit';
+            }
+        });
+
+        // Load awal data
+        window.onload = fetchUmkms;
+    </script>
+</body>
+</html>
