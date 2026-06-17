@@ -169,6 +169,10 @@
         <div style="height: 400px;">
             <canvas id="factorRadarChart"></canvas>
         </div>
+        <div style="font-size: 10px; color: var(--text-secondary); line-height: 1.4; margin-top: 14px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px;">
+            <i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i>
+            <strong>Fungsi & Perhitungan:</strong> Memvisualisasikan peta konektivitas dan kekuatan relatif dari 6 faktor utama kesehatan internal organisasi UMKM terpilih. Nilai diperoleh dari rata-rata persentase skor masing-masing faktor berdasarkan kuesioner berjalan.
+        </div>
     </div>
 
     <!-- Outlier Analysis -->
@@ -185,6 +189,10 @@
             <div class="chart-inner-container">
                 <canvas id="outlierChart"></canvas>
             </div>
+        </div>
+        <div style="font-size: 10px; color: var(--text-secondary); line-height: 1.4; margin-top: 14px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px;">
+            <i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i>
+            <strong>Fungsi & Perhitungan:</strong> Mendeteksi sebaran skor (kuartil, median, min/max) serta mendeteksi anomali/nilai ekstrim (outliers) pada skor kesehatan tiap faktor di seluruh ekosistem. Dianalisis menggunakan metode statistik Box Plot berdasarkan agregat skor faktor seluruh UMKM aktif.
         </div>
     </div>
 </div>

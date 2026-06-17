@@ -151,6 +151,10 @@
             <span><span class="leg-sq" style="background:#818cf8;"></span> Periode Saat Ini</span>
             <span><span class="leg-sq" style="background:rgba(255,255,255,0.2);"></span> Periode Sebelumnya</span>
         </div>
+        <div style="font-size: 10px; color: var(--text-secondary); line-height: 1.4; margin-top: 14px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px;">
+            <i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i>
+            <strong>Fungsi & Perhitungan:</strong> Membandingkan skor 6 faktor utama kesehatan organisasi UMKM terpilih antara periode saat ini dengan periode sebelumnya. Skor diperoleh dari perbandingan agregat kuesioner internal Owner & Karyawan pada periode berjalan dengan data historis kuesioner periode sebelumnya.
+        </div>
     </div>
 
     {{-- Peringkat Faktor --}}
@@ -221,6 +225,10 @@
     <div class="legend-row hide-on-desktop" style="justify-content: center; margin-top: 16px;">
         <span><span class="leg-ci" style="background:#22d3ee;"></span> {{ optional($assessment_info)->umkm->nama_umkm ?? 'UMKM' }}</span>
         <span><span class="leg-ci" style="background:rgba(255,255,255,0.2);"></span> Rata-rata Industri</span>
+    </div>
+    <div style="font-size: 10px; color: var(--text-secondary); line-height: 1.4; margin-top: 14px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px;">
+        <i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i>
+        <strong>Fungsi & Perhitungan:</strong> Membandingkan skor kesehatan organisasi dari UMKM terpilih dengan rata-rata (benchmark) industri sejenis. Skor UMKM berasal dari hasil kuesioner internal, sedangkan pembanding rata-rata industri dihitung dari rata-rata seluruh UMKM terdaftar yang berada di sektor yang sama.
     </div>
 </div>
 

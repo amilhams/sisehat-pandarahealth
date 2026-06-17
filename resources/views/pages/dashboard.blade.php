@@ -344,6 +344,10 @@
             </div>
         @endif
         </div>
+        <div style="font-size: 10px; color: var(--text-secondary); line-height: 1.4; margin-top: 14px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px;">
+            <i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i>
+            <strong>Fungsi & Perhitungan:</strong> Menampilkan tingkat kesehatan operasional organisasi secara umum (Health Score) dan skor 6 sub-faktor bagi UMKM terpilih. Skor dihitung dari rata-rata tertimbang seluruh jawaban kuesioner yang disubmit oleh Owner dan Karyawan UMKM tersebut.
+        </div>
     </div>
 </div>
 
@@ -422,9 +426,9 @@
             <div id="average-explanation-text" style="font-size: 11px; color: var(--text-secondary); line-height: 1.5; margin-top: 12px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
                 <i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i>
                 @if($filter_sektor == 'global')
-                    <strong>Info Perhitungan Rata-rata:</strong> Rata-rata skor per faktor dihitung dengan menjumlahkan seluruh skor faktor kesehatan organisasi yang diperoleh dari hasil kuesioner yang telah diselesaikan oleh Owner dan Karyawan dari semua UMKM di seluruh sektor usaha, kemudian dibagi dengan jumlah responden.
+                    <strong>Fungsi & Perhitungan Rata-rata Global:</strong> Rata-rata ini berfungsi sebagai tolok ukur (benchmark) untuk membandingkan rata-rata skor kesehatan operasional dari 6 faktor utama antar sektor usaha secara global. Nilai rata-rata diperoleh dengan menjumlahkan seluruh skor faktor kesehatan organisasi dari kuesioner Owner dan Karyawan dari semua UMKM di seluruh sektor usaha, lalu dibagi dengan total jumlah responden.
                 @else
-                    <strong>Info Perhitungan Rata-rata Sektor ({{ $filter_sektor }}):</strong> Rata-rata skor per faktor dihitung khusus untuk sektor <strong>{{ $filter_sektor }}</strong>, berasal dari total penilaian kuesioner yang diisi oleh Owner dan Karyawan dari seluruh UMKM yang terdaftar dalam sektor ini.
+                    <strong>Fungsi & Perhitungan Rata-rata Sektor ({{ $filter_sektor }}):</strong> Rata-rata ini berfungsi untuk mengetahui profil kekuatan dan kelemahan kinerja kesehatan operasional khusus pada sektor <strong>{{ $filter_sektor }}</strong>. Nilai rata-rata diperoleh dari total skor kuesioner Owner dan Karyawan dari seluruh UMKM yang terdaftar dalam sektor ini, lalu dibagi dengan jumlah responden di sektor tersebut.
                 @endif
             </div>
 
@@ -507,9 +511,9 @@
             <div id="std-dev-explanation-text" style="font-size: 11px; color: var(--text-secondary); line-height: 1.5; margin-top: 12px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
                 <i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i>
                 @if($filter_sektor == 'global')
-                    <strong>Info Standar Deviasi Global:</strong> Standar deviasi mengukur seberapa jauh skor kesehatan organisasi tiap UMKM menyimpang dari rata-rata global. Kolom <strong>Overall SD</strong> menunjukkan variabilitas keseluruhan dari faktor tersebut di seluruh ekosistem, sedangkan kolom <strong>Tertinggi</strong> dan <strong>Terendah</strong> menunjukkan sektor mana yang memiliki tingkat perbedaan performa terbesar dan terkonsisten di antara UMKM anggotanya.
+                    <strong>Fungsi & Perhitungan Standar Deviasi Global:</strong> Standar deviasi berfungsi untuk mengukur variabilitas, konsistensi, atau kesenjangan skor kesehatan organisasi antar UMKM di seluruh ekosistem. Kolom <strong>Overall SD</strong> menunjukkan tingkat sebaran data secara keseluruhan, sedangkan kolom <strong>Tertinggi</strong> dan <strong>Terendah</strong> menunjukkan sektor dengan kesenjangan terbesar dan terkonsisten. Nilai diperoleh melalui perhitungan simpangan baku (akar kuadrat dari varians) dari skor tiap UMKM terhadap rata-rata global.
                 @else
-                    <strong>Info Standar Deviasi Sektor ({{ $filter_sektor }}):</strong> Standar deviasi sektor mengukur tingkat variabilitas atau kesenjangan skor kesehatan organisasi khusus untuk UMKM di dalam sektor <strong>{{ $filter_sektor }}</strong>. Standar deviasi yang rendah menunjukkan kinerja kesehatan organisasi antar UMKM di sektor ini cenderung seragam/konsisten, sedangkan standar deviasi yang tinggi menunjukkan adanya ketimpangan yang besar antar UMKM.
+                    <strong>Fungsi & Perhitungan Standar Deviasi Sektor ({{ $filter_sektor }}):</strong> Standar deviasi sektor berfungsi untuk melihat tingkat kesenjangan atau pemerataan skor kesehatan operasional khusus antar UMKM di dalam sektor <strong>{{ $filter_sektor }}</strong>. Standar deviasi yang rendah (rendah kesenjangan) menunjukkan kinerja antar UMKM cenderung seragam/konsisten, sedangkan standar deviasi yang tinggi (tinggi kesenjangan) menunjukkan ketimpangan yang besar. Nilai diperoleh melalui perhitungan simpangan baku berdasarkan selisih skor tiap UMKM di dalam sektor ini terhadap nilai rata-rata sektor.
                 @endif
             </div>
 
@@ -789,15 +793,15 @@ function updateSectorFilter(sector) {
     const avgExplEl = document.getElementById('average-explanation-text');
     if (avgExplEl) {
         avgExplEl.innerHTML = sector === 'global'
-            ? `<i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i><strong>Info Perhitungan Rata-rata:</strong> Rata-rata skor per faktor dihitung dengan menjumlahkan seluruh skor faktor kesehatan organisasi yang diperoleh dari hasil kuesioner yang telah diselesaikan oleh Owner dan Karyawan dari semua UMKM di seluruh sektor usaha, kemudian dibagi dengan jumlah responden.`
-            : `<i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i><strong>Info Perhitungan Rata-rata Sektor (${sector}):</strong> Rata-rata skor per faktor dihitung khusus untuk sektor <strong>${sector}</strong>, berasal dari total penilaian kuesioner yang diisi oleh Owner dan Karyawan dari seluruh UMKM yang terdaftar dalam sektor ini.`;
+            ? `<i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i><strong>Fungsi & Perhitungan Rata-rata Global:</strong> Rata-rata ini berfungsi sebagai tolok ukur (benchmark) untuk membandingkan rata-rata skor kesehatan operasional dari 6 faktor utama antar sektor usaha secara global. Nilai rata-rata diperoleh dengan menjumlahkan seluruh skor faktor kesehatan organisasi dari kuesioner Owner dan Karyawan dari semua UMKM di seluruh sektor usaha, lalu dibagi dengan total jumlah responden.`
+            : `<i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i><strong>Fungsi & Perhitungan Rata-rata Sektor (${sector}):</strong> Rata-rata ini berfungsi untuk mengetahui profil kekuatan dan kelemahan kinerja kesehatan operasional khusus pada sektor <strong>${sector}</strong>. Nilai rata-rata diperoleh dari total skor kuesioner Owner dan Karyawan dari seluruh UMKM yang terdaftar dalam sektor ini, lalu dibagi dengan jumlah responden di sektor tersebut.`;
     }
 
     const stdExplEl = document.getElementById('std-dev-explanation-text');
     if (stdExplEl) {
         stdExplEl.innerHTML = sector === 'global'
-            ? `<i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i><strong>Info Standar Deviasi Global:</strong> Standar deviasi mengukur seberapa jauh skor kesehatan organisasi tiap UMKM menyimpang dari rata-rata global. Kolom <strong>Overall SD</strong> menunjukkan variabilitas keseluruhan dari faktor tersebut di seluruh ekosistem, sedangkan kolom <strong>Tertinggi</strong> dan <strong>Terendah</strong> menunjukkan sektor mana yang memiliki tingkat perbedaan performa terbesar dan terkonsisten di antara UMKM anggotanya.`
-            : `<i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i><strong>Info Standar Deviasi Sektor (${sector}):</strong> Standar deviasi sektor mengukur tingkat variabilitas atau kesenjangan skor kesehatan organisasi khusus untuk UMKM di dalam sektor <strong>${sector}</strong>. Standar deviasi yang rendah menunjukkan kinerja kesehatan organisasi antar UMKM di sektor ini cenderung seragam/konsisten, sedangkan standar deviasi yang tinggi menunjukkan adanya ketimpangan yang besar antar UMKM.`;
+            ? `<i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i><strong>Fungsi & Perhitungan Standar Deviasi Global:</strong> Standar deviasi berfungsi untuk mengukur variabilitas, konsistensi, atau kesenjangan skor kesehatan organisasi antar UMKM di seluruh ekosistem. Kolom <strong>Overall SD</strong> menunjukkan tingkat sebaran data secara keseluruhan, sedangkan kolom <strong>Tertinggi</strong> dan <strong>Terendah</strong> menunjukkan sektor dengan kesenjangan terbesar dan terkonsisten. Nilai diperoleh melalui perhitungan simpangan baku (akar kuadrat dari varians) dari skor tiap UMKM terhadap rata-rata global.`
+            : `<i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i><strong>Fungsi & Perhitungan Standar Deviasi Sektor (${sector}):</strong> Standar deviasi sektor berfungsi untuk melihat tingkat kesenjangan atau pemerataan skor kesehatan operasional khusus antar UMKM di dalam sektor <strong>${sector}</strong>. Standar deviasi yang rendah (rendah kesenjangan) menunjukkan kinerja antar UMKM cenderung seragam/konsisten, sedangkan standar deviasi yang tinggi (tinggi kesenjangan) menunjukkan ketimpangan yang besar. Nilai diperoleh melalui perhitungan simpangan baku berdasarkan selisih skor tiap UMKM di dalam sektor ini terhadap nilai rata-rata sektor.`;
     }
 
     fetchDashboardRealtimeData();

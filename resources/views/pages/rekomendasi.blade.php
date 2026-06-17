@@ -5,7 +5,23 @@
 @section('styles')
 <style>
     /* ── Page Header ── */
-    .rek-title { font-size: 36px; font-weight: 800; margin-bottom: 14px; letter-spacing: -0.5px; }
+    .rek-header { margin-bottom: 32px; }
+    .rek-header-inner { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+    .rek-title { font-size: 34px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; display: flex; align-items: center; gap: 12px; }
+    .rek-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.7; max-width: 520px; }
+    .rek-actions { display: flex; gap: 10px; align-items: flex-start; flex-shrink: 0; }
+    
+    .umkm-select {
+        background: #1a1a1a;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        outline: none;
+        cursor: pointer;
+    }
+    .umkm-select:hover { border-color: #444; }
 
     .rek-select {
         appearance: none; background: var(--card-color);
@@ -188,47 +204,32 @@
 
 @section('content')
 
-{{-- Page Title --}}
-<div class="rek-title">Rekomendasi Strategis</div>
-
-{{-- SECTION PEMBUNGKUS 1: Parameter Pilihan --}}
-<div class="card" style="margin-bottom: 24px; padding: 24px;">
-    <div style="font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-     Parameter Pilihan
-    </div>
-    <div class="rek-dropdowns-col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-        {{-- Dropdowns Nama UMKM --}}
+{{-- Header --}}
+<div class="rek-header">
+    <div class="rek-header-inner">
         <div>
-            <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 6px; font-weight: 600; text-transform: uppercase;">Pilih UMKM</label>
-            @if(isset($all_umkms) && $all_umkms->count() > 1)
-                <select class="rek-select" style="margin-bottom: 0; width: 100%; min-width: 0;" onchange="window.location.href='?umkm_id=' + this.value + '&rank_period={{ $selected_rank_period }}'">
-                    @foreach($all_umkms as $u)
-                        <option value="{{ $u->umkm_id }}" {{ $selected_umkm_id == $u->umkm_id ? 'selected' : '' }}>
-                            {{ $u->nama_umkm }}
-                        </option>
-                    @endforeach
-                </select>
-            @else
-                <select class="rek-select" style="margin-bottom: 0; width: 100%; min-width: 0;" disabled>
-                    <option>{{ optional($assessment_info)->umkm->nama_umkm ?? 'Nama UMKM' }}</option>
-                </select>
-            @endif
+            <h1 class="rek-title">
+                Rekomendasi Strategis
+                @if(isset($all_umkms) && $all_umkms->count() > 1)
+                    <select class="umkm-select" onchange="window.location.href='?umkm_id=' + this.value + '&rank_period={{ $selected_rank_period }}'">
+                        @foreach($all_umkms as $u)
+                            <option value="{{ $u->umkm_id }}" {{ $selected_umkm_id == $u->umkm_id ? 'selected' : '' }}>
+                                {{ $u->nama_umkm }}
+                            </option>
+                        @endforeach
+                    </select>
+                @endif
+            </h1>
+            <p class="rek-desc">Rekomendasi tindakan taktis dan strategis untuk meningkatkan kesehatan organisasi berdasarkan hasil asesmen.</p>
         </div>
-
-        {{-- Dropdown Periode Asesmen (Ke-X) --}}
-        <div>
-            <label style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 6px; font-weight: 600; text-transform: uppercase;">Periode Asesmen</label>
+        <div class="rek-actions">
             @if(isset($assessment_history) && $assessment_history->count() > 0)
-                <select class="rek-select" style="margin-bottom: 0; width: 100%; min-width: 0;" onchange="window.location.href='?assessment_id=' + this.value + '&umkm_id={{ $selected_umkm_id }}&rank_period={{ $selected_rank_period }}'">
+                <select class="umkm-select" style="font-size: 13px; padding: 8px 16px; border-radius: 8px; height: 42px;" onchange="window.location.href='?assessment_id=' + this.value + '&umkm_id={{ $selected_umkm_id }}&rank_period={{ $selected_rank_period }}'">
                     @foreach($assessment_history as $history)
                         <option value="{{ $history->assessment_id }}" {{ $selected_assessment_id == $history->assessment_id ? 'selected' : '' }}>
                             Periode: {{ \Carbon\Carbon::parse($history->tanggal_mulai ?? $history->created_at)->format('F Y') }} (Ke-{{ $history->sequence_in_month ?? 1 }})
                         </option>
                     @endforeach
-                </select>
-            @else
-                <select class="rek-select" style="margin-bottom: 0; width: 100%; min-width: 0;" disabled>
-                    <option>Belum ada periode asesmen</option>
                 </select>
             @endif
         </div>
@@ -286,6 +287,10 @@
                 <div class="badge-status" style="margin-top: 4px; padding: 8px 16px; font-size: 13px;">
                     <span class="badge-status-dot" style="background: {{ $dotColor }}; width: 8px; height: 8px;"></span> 
                     <span>Status: {{ str_replace('_', ' ', strtoupper($health_score->category ?? 'N/A')) }}</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5; margin-top: 8px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; width: 100%; box-sizing: border-box;">
+                    <i class="fa-solid fa-circle-info" style="margin-right: 4px; color: #818cf8;"></i>
+                    <strong>Fungsi & Perhitungan:</strong> Menampilkan status kesehatan organisasi keseluruhan (Health Score) dari UMKM terpilih. Skor diperoleh dari hasil rata-rata tertimbang seluruh jawaban kuesioner yang diselesaikan oleh Owner dan Karyawan pada periode tersebut.
                 </div>
             </div>
         </div>
@@ -446,17 +451,16 @@
         data: {
             datasets: [{
                 data: [healthScore, 100 - healthScore],
-                backgroundColor: [gaugeColor, '#222'],
+                backgroundColor: [gaugeColor, '#1e1e1e'],
                 borderWidth: 0,
-                borderRadius: 10,
-                circumference: 180,
-                rotation: 270
+                circumference: 200,
+                rotation: 260
             }]
         },
         options: {
             responsive: false,
             maintainAspectRatio: false,
-            cutout: '80%',
+            cutout: '82%',
             plugins: { legend: { display: false }, tooltip: { enabled: false } }
         }
     });
@@ -496,7 +500,7 @@
                         // 2. Update Gauge chart
                         if (window.gaugeChart) {
                             window.gaugeChart.data.datasets[0].data = [score, 100 - score];
-                            window.gaugeChart.data.datasets[0].backgroundColor = [catColor, '#222'];
+                            window.gaugeChart.data.datasets[0].backgroundColor = [catColor, '#1e1e1e'];
                             window.gaugeChart.update();
                         }
                     }
